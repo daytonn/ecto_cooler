@@ -4,7 +4,7 @@ defmodule Mix.Tasks.Ectc.Gen.Repo do
   @moduledoc """
   Generate a schema using EctoCooler
 
-    mix ecto_cooler.gen.repo Posts Post posts title:string
+    mix ectc.gen.repo Posts Post posts title:string
   """
   @requirements ["app.config"]
 
@@ -14,7 +14,7 @@ defmodule Mix.Tasks.Ectc.Gen.Repo do
   alias EctoCooler.Templates.Migration
   alias EctoCooler.Templates.Schema
 
-  @help "mix ecto_cooler.gen.repo Posts Post posts title:string"
+  @help "mix ectc.gen.repo Posts Post posts title:string"
 
   @impl Mix.Task
   def run([]), do: print_help()
