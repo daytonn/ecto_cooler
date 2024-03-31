@@ -16,6 +16,10 @@ Unreleased
 ### Fixed
 
 ### Security
+[2.0.4]
+### Added
+- Documentation on configuration values
+
 [2.0.3]
 ---
 ### Changed
