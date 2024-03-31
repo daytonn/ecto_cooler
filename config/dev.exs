@@ -20,4 +20,4 @@ config :ecto_cooler,
   schema_dir: "lib/ecto_cooler/schema",
   app_slug: :ecto_cooler,
   migration_dir: "priv/repo/migrations",
-  generators: [timestamp_type: :utc_datetime, binary_id: false]
+  generators: [binary_id: true]

@@ -17,7 +17,7 @@ defmodule EctoCooler.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       package: package(),
       start_permanent: Mix.env() == :prod,
-      version: "2.0.4"
+      version: "2.0.5"
     ]
   end
 

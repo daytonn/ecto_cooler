@@ -69,7 +69,7 @@ This package is available in [Hex](https://hex.pm/), the package can be installe
 ```elixir
     def deps do
       [
-        {:ecto_cooler, "~> 2.0.3"}
+        {:ecto_cooler, "~> 2.0.5"}
       ]
     end
 ```
