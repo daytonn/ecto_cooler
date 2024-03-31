@@ -83,7 +83,14 @@ defmodule EctoCooler.Templates.Migration do
   end
 
   defp create_field([field, "references", table] = list) when is_list(list) do
-    "add :#{field}, references(:#{table}#{reference_type(Env.get(:generators, []))}), null: false"
+    type =
+      if Keyword.get(Env.get(:generators, []), :binary_id) do
+        ", type: :binary_id"
+      else
+        ""
+      end
+
+    "add :#{field}, references(:#{table}#{type}), null: false"
   end
 
   defp create_field([field, type, "null"] = list) when is_list(list) do
@@ -93,9 +100,6 @@ defmodule EctoCooler.Templates.Migration do
   defp create_field([field, type] = list) when is_list(list) do
     "add :#{field}, :#{translate_type(type)}, null: false"
   end
-
-  defp reference_type(binary_id: true), do: ", type: :binary_id"
-  defp reference_type(_), do: nil
 
   defp translate_type("int"), do: "integer"
   defp translate_type("string"), do: "text"
