@@ -4,6 +4,7 @@ EctoCooler
 * [About](#about)
 * [Features](#features)
 * [Installation](#installation)
+* [Configuration](#configuration)
 * [Usage](#usage)
   * [Basic usage](#basic-usage---generate-all-ectoresource-functions)
   * [Explicit usage](#explicit-usage---generate-only-given-functions)
@@ -72,6 +73,24 @@ This package is available in [Hex](https://hex.pm/), the package can be installe
       ]
     end
 ```
+
+Configuration
+---------------------
+Configuration is only necessary if you intend to use the generators for Phoenix applications. At the bare minimum you need `app_name`, and `app_slug`. These two configurations allow a basic generation of Repo, Schema, and Migration modules for use in a Phoenix application. The full set of configuration variables which control where files are generated is as follows: 
+
+```elixir
+config :ecto_cooler,
+    app_name: "EctoCooler",
+    schema_namespace: "Schema",
+    repo_namespace: "Repo",
+    repo_dir: "lib/ecto_cooler/repo",
+    schema_dir: "lib/ecto_cooler/schema",
+    app_slug: :ecto_cooler,
+    migration_dir: "priv/repo/migrations",
+    generators: [binary_id: true]
+```
+
+_NOTE: If `binary_id` is configured in your Phoenix configuration and you have `app_slug` defined in your `ecto_cooler` configuration, you don't need to specify the `generators: [binary_id: true]` in the `ecto_cooler` config since it will be picked up from the Phoenix configuration._
 
 Usage
 -----
