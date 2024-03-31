@@ -11,6 +11,7 @@ EctoCooler
   * [Alias :read](#alias-read---generate-data-access-functions)
   * [Alias :read_write](#alias-read_write---generate-data-access-and-manipulation-functions-excluding-delete)
   * [Resource functions](#resource-functions)
+  * [Generators](#generators)
 * [Caveats](#caveats)
 * [Contribution](#contribution)
   * [Bug reports](#bug_reports)
@@ -67,7 +68,7 @@ This package is available in [Hex](https://hex.pm/), the package can be installe
 ```elixir
     def deps do
       [
-        {:ecto_cooler, "~> 1.1.0"}
+        {:ecto_cooler, "~> 2.0.1"}
       ]
     end
 ```
@@ -424,6 +425,20 @@ iex> Posts.update!(%Person{id: 1}, %{name: "New Person"})
 iex> Posts.update!(%Person{id: 1}, %{invalid: "invalid"})
 ** (Ecto.InvalidChangesetError)
 ```
+Generators
+----------
+Generators are basically `EctoCooler` replacements for Phoenix Context and Schema generators.
+
+### mix ectc.gen.repo
+
+This generator will generate a Repo module, a Schema module, and a Migration file with the given options. The options from left to right are: [repo name] [schema name] [table name] [attributes]
+
+  mix ectc.gen.repo Posts Post posts title:string author:string
+
+This will create the following files:
+`/lib/my_app/repo/posts.ex`
+`/lib/my_app/schema/post.ex`
+`lib/priv/repo/migrations/00000000000000000_create_posts.exs`
 
 Caveats
 -------
