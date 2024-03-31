@@ -16,7 +16,13 @@ Unreleased
 ### Fixed
 
 ### Security
+[2.0.5]
+---
+### Fixed
+- references contain a type annotation when binary_id is true
+
 [2.0.4]
+---
 ### Added
 - Documentation on configuration values
 
