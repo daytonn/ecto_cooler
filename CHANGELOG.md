@@ -16,6 +16,12 @@ Unreleased
 ### Fixed
 
 ### Security
+[2.0.6]
+---
+### Added
+- schema generator
+- migration generator
+
 [2.0.5]
 ---
 ### Fixed
