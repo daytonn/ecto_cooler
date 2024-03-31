@@ -433,12 +433,16 @@ Generators are basically `EctoCooler` replacements for Phoenix Context and Schem
 
 This generator will generate a Repo module, a Schema module, and a Migration file with the given options. The options from left to right are: [repo name] [schema name] [table name] [attributes]
 
+```bash`
   mix ectc.gen.repo Posts Post posts title:string author:string
+```
 
 This will create the following files:
-`/lib/my_app/repo/posts.ex`
-`/lib/my_app/schema/post.ex`
-`lib/priv/repo/migrations/00000000000000000_create_posts.exs`
+```
+/lib/my_app/repo/posts.ex
+/lib/my_app/schema/post.ex
+lib/priv/repo/migrations/00000000000000000_create_posts.exs
+```
 
 Caveats
 -------

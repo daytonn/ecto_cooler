@@ -16,6 +16,9 @@ Unreleased
 ### Fixed
 
 ### Security
+[2.0.2]
+---
+- Pull binary_id config for generators from parent app as a last resort, if config :app_slug is set
 
 ---
 [2.0.0]
