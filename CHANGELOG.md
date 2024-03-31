@@ -16,16 +16,34 @@ Unreleased
 ### Fixed
 
 ### Security
+[2.0.4]
+### Added
+- Documentation on configuration values
+
+[2.0.3]
+---
+### Changed
+- Refactor how config is pulled from parent app
+
 [2.0.2]
 ---
+### Changed
 - Pull binary_id config for generators from parent app as a last resort, if config :app_slug is set
+
+[2.0.1]
+---
+### Added
+- Added documentation on generators
 
 ---
 [2.0.0]
+### Added
 - Add `where` option to `all` function
-- Suffix is excluded by default. Suffix is only generated explicitly now with suffix: true.
 - Generators have been added to make generating schema and "context" modules within Phoenix applications easier.
+### Changed
+- Suffix is excluded by default. Suffix is only generated explicitly now with suffix: true.
 - Small refactoring making it slightly simpler to read through the `resource` macro
+### Fixed
 - Some documentation fixes
 
 [1.3.3]
