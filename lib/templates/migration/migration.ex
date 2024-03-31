@@ -15,9 +15,11 @@ defmodule EctoCooler.Templates.Migration do
 
   defp maybe_set_binary_id(false, app_slug) when is_atom(app_slug) do
     case Application.fetch_env(app_slug, :generators) do
-      :error -> false
-      {:ok, [binary_id: binary_id]} -> binary_id
-      _ -> false
+      :error ->
+        false
+
+      {:ok, opts} ->
+        Keyword.get(opts, :binary_id, false)
     end
   end
 
