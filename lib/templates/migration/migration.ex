@@ -10,14 +10,26 @@ defmodule EctoCooler.Templates.Migration do
     [:assigns]
   )
 
+  defp maybe_set_binary_id(true, _), do: true
+  defp maybe_set_binary_id(false, nil), do: false
+
+  defp maybe_set_binary_id(false, app_slug) when is_atom(app_slug) do
+    case Application.fetch_env(app_slug, :generators) do
+      :error -> false
+      {:ok, [binary_id: binary_id]} -> binary_id
+      _ -> false
+    end
+  end
+
   def create_migration([schema_name | [table_name | attributes]]) do
     app_name = Env.get(:app_name, "MyApp")
-    # app_slug = Env.get(:app_slug, nil)
+    app_slug = Env.get(:app_slug, nil)
 
     binary_id =
       :generators
       |> Env.get([])
       |> Keyword.get(:binary_id, false)
+      |> maybe_set_binary_id(app_slug)
 
     repo_name = Inflex.pluralize(schema_name)
     options = options(binary_id: binary_id)
