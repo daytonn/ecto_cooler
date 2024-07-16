@@ -23,12 +23,6 @@ defmodule EctoCooler.OnlyFilterTest do
     age: 42
   }
 
-  @updated_person_attributes %{
-    first_name: "Updated Test",
-    last_name: "Updated Person",
-    age: 33
-  }
-
   describe "all" do
     test "it returns all the records" do
       person = struct(Person, @person_attributes)
@@ -57,119 +51,67 @@ defmodule EctoCooler.OnlyFilterTest do
 
   describe "changeset" do
     test "it doesn't create a changeset function" do
-      assert_raise UndefinedFunctionError, fn ->
-        People.changeset()
-      end
+      refute Keyword.has_key?(People.__info__(:functions), :changeset)
     end
   end
 
   describe "create" do
     test "it doesn't create a create function" do
-      assert_raise UndefinedFunctionError, fn ->
-        People.create(@person_attributes)
-      end
+      refute Keyword.has_key?(People.__info__(:functions), :create)
     end
   end
 
   describe "create!" do
     test "it doesn't create a create! function" do
-      assert_raise UndefinedFunctionError, fn ->
-        People.create!(@person_attributes)
-      end
+      refute Keyword.has_key?(People.__info__(:functions), :create!)
     end
   end
 
   describe "delete" do
     test "doesn't create a delete function" do
-      {:ok, person} =
-        %Person{}
-        |> Person.changeset(@person_attributes)
-        |> Repo.insert()
-
-      assert_raise UndefinedFunctionError, fn ->
-        People.delete(person)
-      end
+      refute Keyword.has_key?(People.__info__(:functions), :delete)
     end
   end
 
   describe "delete!" do
     test "doesn't create a delete! function" do
-      {:ok, person} =
-        %Person{}
-        |> Person.changeset(@person_attributes)
-        |> Repo.insert()
-
-      assert_raise UndefinedFunctionError, fn ->
-        People.delete!(person)
-      end
+      refute Keyword.has_key?(People.__info__(:functions), :delete!)
     end
   end
 
   describe "get" do
     test "it doesn't create a get function" do
-      {:ok, person} =
-        Person
-        |> struct(@person_attributes)
-        |> Repo.insert()
-
-      assert_raise UndefinedFunctionError, fn ->
-        People.get(person.id)
-      end
+      refute Keyword.has_key?(People.__info__(:functions), :get)
     end
   end
 
   describe "get!" do
     test "it doesn't create a get! function" do
-      {:ok, person} =
-        Person
-        |> struct(@person_attributes)
-        |> Repo.insert()
-
-      assert_raise UndefinedFunctionError, fn ->
-        People.get!(person.id)
-      end
+      refute Keyword.has_key?(People.__info__(:functions), :get!)
     end
   end
 
   describe "get_by" do
     test "doesn't create a get_by function" do
-      assert_raise UndefinedFunctionError, fn ->
-        People.get_by(age: @person_attributes.age)
-      end
+      refute Keyword.has_key?(People.__info__(:functions), :get_by)
     end
   end
 
   describe "get_by!" do
     test "doesn't create a get_by! function" do
-      assert_raise UndefinedFunctionError, fn ->
-        People.get_by!(age: @person_attributes.age)
-      end
+      refute Keyword.has_key?(People.__info__(:functions), :get_by!)
     end
   end
 
   describe "update" do
     test "doesn't create an update function" do
-      {:ok, person} =
-        Person
-        |> struct(@person_attributes)
-        |> Repo.insert()
-
-      assert_raise UndefinedFunctionError, fn ->
-        People.update(person, @updated_person_attributes)
-      end
+      refute Keyword.has_key?(People.__info__(:functions), :update)
     end
   end
 
   describe "update!" do
     test "doesn't create an update! function" do
-      {:ok, person} =
-        Person
-        |> struct(@person_attributes)
-        |> Repo.insert()
-
-      assert_raise UndefinedFunctionError, fn ->
-        People.update!(person, @updated_person_attributes)
-      end
+      refute Keyword.has_key?(People.__info__(:functions), :update!)
     end
   end
 end

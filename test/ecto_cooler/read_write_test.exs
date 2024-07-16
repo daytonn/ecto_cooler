@@ -90,27 +90,13 @@ defmodule EctoCooler.ReadWrite do
 
   describe "delete" do
     test "it doesn't create a delete method" do
-      {:ok, person} =
-        %Person{}
-        |> Person.changeset(@person_attributes)
-        |> Repo.insert()
-
-      assert_raise UndefinedFunctionError, fn ->
-        People.delete(person)
-      end
+      refute Keyword.has_key?(People.__info__(:functions), :delete)
     end
   end
 
   describe "delete!" do
     test "doesn't create a delete! method" do
-      {:ok, person} =
-        %Person{}
-        |> Person.changeset(@person_attributes)
-        |> Repo.insert()
-
-      assert_raise UndefinedFunctionError, fn ->
-        People.delete!(person)
-      end
+      refute Keyword.has_key?(People.__info__(:functions), :delete!)
     end
   end
 
