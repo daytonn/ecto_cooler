@@ -1,99 +1,101 @@
-EctoCooler
-============
+# EctoCooler
+
 ![Ecto Cooler Logo](https://repository-images.githubusercontent.com/628352289/291d151f-76d9-4e9b-8321-665038706764)
-* [About](#about)
-* [Features](#features)
-* [Installation](#installation)
-* [Configuration](#configuration)
-* [Usage](#usage)
-  * [Basic usage](#basic-usage---generate-all-ectoresource-functions)
-  * [Explicit usage](#explicit-usage---generate-only-given-functions)
-  * [Exclusive usage](#exclusive-usage---generate-all-but-the-given-functions)
-  * [Alias :read](#alias-read---generate-data-access-functions)
-  * [Alias :read_write](#alias-read_write---generate-data-access-and-manipulation-functions-excluding-delete)
-  * [Resource functions](#resource-functions)
-  * [Generators](#generators)
-* [Caveats](#caveats)
-* [Contribution](#contribution)
-  * [Bug reports](#bug_reports)
-  * [Pull requests](#pull_requests)
-* [License](#license)
-* [Authors](#authors)
+
+- [About](#about)
+- [Features](#features)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+  - [Basic usage](#basic-usage---generate-all-ectoresource-functions)
+  - [Explicit usage](#explicit-usage---generate-only-given-functions)
+  - [Exclusive usage](#exclusive-usage---generate-all-but-the-given-functions)
+  - [Alias :read](#alias-read---generate-data-access-functions)
+  - [Alias :read_write](#alias-read_write---generate-data-access-and-manipulation-functions-excluding-delete)
+  - [Resource functions](#resource-functions)
+  - [Generators](#generators)
+- [Caveats](#caveats)
+- [Contribution](#contribution)
+  - [Bug reports](#bug_reports)
+  - [Pull requests](#pull_requests)
+- [License](#license)
+- [Authors](#authors)
 
 Eliminate boilerplate involved in defining basic CRUD functions in a Phoenix context or Elixir module.
 
-About
------
-When using [Context modules](https://hexdocs.pm/phoenix/contexts.html) in a [Phoenix](https://phoenixframework.org/) application, there's a general need to define the standard CRUD functions for a given `Ecto.Schema`. Phoenix context generators will even do this automatically. Soon you will notice that there's quite a lot of code involved in CRUD access within your contexts.
+## About
 
-This can become problematic for a few reasons:
+When using [Context modules](https://hexdocs.pm/phoenix/contexts.html) in a Phoenix application, there's a general need to define standard CRUD functions for a given `Ecto.Schema`. Phoenix context generators can even do this automatically. However, you'll soon notice that there's quite a lot of code involved in CRUD access within your contexts.
 
-* Boilerplate functions for CRUD access, for every `Ecto.Schema` referenced in that context, introduce more noise than signal. This can obscure the more interesting details of the context.
-* These functions may tend to accumulate drift from the standard API by inviting edits for new use-cases, reducing the usefulness of naming conventions.
-* The burden of locally testing wrapper functions, yields low value for the writing and maintainence investment.
+This can become problematic for several reasons:
 
-In short, at best this code is redundant and at worst is a deviant entanglement of modified conventions. All of which amounts to a more-painful development experience. `EctoCooler` was created to ease this pain.
+- Boilerplate functions for CRUD access, for every `Ecto.Schema` referenced in that context, introduce more noise than signal. This can obscure the more interesting details of the context.
+- These functions may tend to drift from the standard API by inviting edits for new use-cases, reducing the usefulness of naming conventions.
+- The burden of locally testing wrapper functions yields low value compared to the investment in writing and maintaining them.
 
-Features
---------
+In short, at best, this code is redundant and at worst is a deviant entanglement of modified conventions. All of which amounts to a more-painful development experience. `EctoCooler` was created to ease this pain.
 
-### Generate CRUD functions for a given `Ecto.Repo` and `Ecto.Schema`
+## Features
 
-`EctoCooler` can be used to generate CRUD functions for a given `Ecto.Repo` and `Ecto.Schema`. By default it will create every function needed to create, read, update, and delete the resouce. It includes the `!` version of each function (where relevant) that will raise an error instead of return a value.
+- ### Generate CRUD functions for a given `Ecto.Repo` and `Ecto.Schema`
 
-### Allow customization of generated resources
+  - `EctoCooler` can be used to generate CRUD functions for a given `Ecto.Repo` and `Ecto.Schema`. By default it will create every function needed to create, read, update, and delete the resource. It includes the `!` variant of each function (where relevant) that raises on failure rather than returning an error tuple.
 
-You can optionally include or exclude specific functions to generate exactly the functions your context requires. There's also two handy aliases for generating read functions and read/write functions.
+- ### Allow customization of generated resources
 
-### Automatic pluralization
+  - You can optionally include or exclude specific functions to generate exactly the functions your context requires. There are also handy aliases (`:read`, `:read_write`, `:delete`) for quickly generating common subsets of functions.
 
-For methods that return a list of records, it seems natural to use a plural name. For example, take a function named `MyContext.all_schema`. While this works, it makes the grammar a bit awkward and distracts from the intent of the function. `EctoCooler` uses `Inflex` when generating functions to create readable english function names automatically. For example, given the schema `Person`, a function named `all_people/1` is generated.
+- ### Automatic pluralization
 
-### Generate documentation for each generated function
+  - `EctoCooler` uses `Inflex` when generating functions to create readable english function names automatically. For example, given the schema `Person`, a function named `all_people/1` is generated.
 
-Every function generated includes documentation so your application's documentation will include the generated functions with examples.
+- ### Generate documentation for each generated function
 
-### Reflection metadata
+  - Every function generated includes documentation so your application's documentation will include the generated functions with examples.
 
-A function is generated for each resource defined by `EctoCooler` to list all the functions generated for each `Ecto.Repo` and `Ecto.Schema`. A mix task is included to provide easy access to this information.
+- ### Supports any module
+  - While `EctoCooler` was designed for [Phoenix Contexts](https://hexdocs.pm/phoenix/contexts.html) in mind, It can be used in any Elixir module to access Ecto-based back-ends.
 
-### Supports any module
-
-While `EctoCooler` was designed for [Phoenix Contexts](https://hexdocs.pm/phoenix/contexts.html) in mind, It can be used in any Elixir module.
-
-Installation
-------------
+## Installation
 
 This package is available in [Hex](https://hex.pm/), the package can be installed by adding ecto_cooler to your list of dependencies in mix.exs:
 
 ```elixir
     def deps do
       [
-        {:ecto_cooler, "~> 2.0.6"}
+        # Use the latest 2.x release
+        {:ecto_cooler, "~> 2.0"}
       ]
     end
 ```
 
-Configuration
----------------------
-Configuration is only necessary if you intend to use the generators for Phoenix applications. At the bare minimum you need `app_name`, and `app_slug`. These two configurations allow a basic generation of Repo, Schema, and Migration modules for use in a Phoenix application. The full set of configuration variables which control where files are generated is as follows: 
+## Configuration
+
+The bare minimum app config is an `app_name` and an `app_slug`. These are only necessary if you are using generators. Otherwise there is no configuration necessary.
 
 ```elixir
 config :ecto_cooler,
-    app_name: "EctoCooler",
-    schema_namespace: "Schema",
-    repo_namespace: "Repo",
-    repo_dir: "lib/ecto_cooler/repo",
-    schema_dir: "lib/ecto_cooler/schema",
-    app_slug: :ecto_cooler,
+  app_name: "MyApp",
+  app_slug: :my_app
+```
+
+Configuration is only necessary if you intend to use the generators for Phoenix applications. The full config is as follows:
+
+```elixir
+config :ecto_cooler,
+    app_name: "MyApp",
+    app_slug: :my_app,
+    generators: [binary_id: true],
     migration_dir: "priv/repo/migrations",
-    generators: [binary_id: true]
+    repo_dir: "lib/my_app/repo",
+    repo_namespace: "Repo",
+    schema_dir: "lib/my_app/schema",
+    schema_namespace: "Schema"
 ```
 
 _NOTE: If `binary_id` is configured in your Phoenix configuration and you have `app_slug` defined in your `ecto_cooler` configuration, you don't need to specify the `generators: [binary_id: true]` in the `ecto_cooler` config since it will be picked up from the Phoenix configuration._
 
-Usage
------
+## Usage
 
 ### Basic usage - generate all `EctoCooler` functions
 
@@ -112,18 +114,18 @@ end
 
 This generates all the functions `EctoCooler` has to offer:
 
-* `MyApp.Repo.Posts.all/1`
-* `MyApp.Repo.Posts.change/1`
-* `MyApp.Repo.Posts.create/1`
-* `MyApp.Repo.Posts.create!/1`
-* `MyApp.Repo.Posts.delete/1`
-* `MyApp.Repo.Posts.delete!/1`
-* `MyApp.Repo.Posts.get/2`
-* `MyApp.Repo.Posts.get!/2`
-* `MyApp.Repo.Posts.get_by/2`
-* `MyApp.Repo.Posts.get_by!/2`
-* `MyApp.Repo.Posts.update/2`
-* `MyApp.Repo.Posts.update!/2`
+- `MyApp.Repo.Posts.all/1`
+- `MyApp.Repo.Posts.change/1`
+- `MyApp.Repo.Posts.create/1`
+- `MyApp.Repo.Posts.create!/1`
+- `MyApp.Repo.Posts.delete/1`
+- `MyApp.Repo.Posts.delete!/1`
+- `MyApp.Repo.Posts.get/2`
+- `MyApp.Repo.Posts.get!/2`
+- `MyApp.Repo.Posts.get_by/2`
+- `MyApp.Repo.Posts.get_by!/2`
+- `MyApp.Repo.Posts.update/2`
+- `MyApp.Repo.Posts.update!/2`
 
 If you want the functions to be namespaced, you can use the `suffix: true` option.
 
@@ -142,18 +144,18 @@ end
 
 This generates all the functions `EctoCooler` with a suffix:
 
-* `MyApp.Repo.Posts.all_posts/1`
-* `MyApp.Repo.Posts.change_post/1`
-* `MyApp.Repo.Posts.create_post/1`
-* `MyApp.Repo.Posts.create_post!/1`
-* `MyApp.Repo.Posts.delete_post/1`
-* `MyApp.Repo.Posts.delete_post!/1`
-* `MyApp.Repo.Posts.get_post/2`
-* `MyApp.Repo.Posts.get_post!/2`
-* `MyApp.Repo.Posts.get_post_by/2`
-* `MyApp.Repo.Posts.get_post_by!/2`
-* `MyApp.Repo.Posts.update_post/2`
-* `MyApp.Repo.Posts.update_post!/2`
+- `MyApp.Repo.Posts.all_posts/1`
+- `MyApp.Repo.Posts.change_post/1`
+- `MyApp.Repo.Posts.create_post/1`
+- `MyApp.Repo.Posts.create_post!/1`
+- `MyApp.Repo.Posts.delete_post/1`
+- `MyApp.Repo.Posts.delete_post!/1`
+- `MyApp.Repo.Posts.get_post/2`
+- `MyApp.Repo.Posts.get_post!/2`
+- `MyApp.Repo.Posts.get_post_by/2`
+- `MyApp.Repo.Posts.get_post_by!/2`
+- `MyApp.Repo.Posts.update_post/2`
+- `MyApp.Repo.Posts.update_post!/2`
 
 ### Explicit usage - generate only given functions
 
@@ -172,8 +174,8 @@ end
 
 This generates only the given functions:
 
-* `MyApp.Repo.Posts.create/1`
-* `MyApp.Repo.Posts.delete!/1`
+- `MyApp.Repo.Posts.create/1`
+- `MyApp.Repo.Posts.delete!/1`
 
 ### Exclusive usage - generate all but the given functions
 
@@ -192,16 +194,16 @@ end
 
 This generates all the functions excluding the given functions:
 
-* `MyApp.Repo.Posts.all/1`
-* `MyApp.Repo.Posts.change/1`
-* `MyApp.Repo.Posts.create!/1`
-* `MyApp.Repo.Posts.delete/1`
-* `MyApp.Repo.Posts.get/2`
-* `MyApp.Repo.Posts.get_by/2`
-* `MyApp.Repo.Posts.get_by!/2`
-* `MyApp.Repo.Posts.get!/2`
-* `MyApp.Repo.Posts.update/2`
-* `MyApp.Repo.Posts.update!/2`
+- `MyApp.Repo.Posts.all/1`
+- `MyApp.Repo.Posts.change/1`
+- `MyApp.Repo.Posts.create!/1`
+- `MyApp.Repo.Posts.delete/1`
+- `MyApp.Repo.Posts.get/2`
+- `MyApp.Repo.Posts.get_by/2`
+- `MyApp.Repo.Posts.get_by!/2`
+- `MyApp.Repo.Posts.get!/2`
+- `MyApp.Repo.Posts.update/2`
+- `MyApp.Repo.Posts.update!/2`
 
 ### Alias `:read` - generate data access functions
 
@@ -220,9 +222,9 @@ end
 
 This generates all the functions necessary for reading data:
 
-* `MyApp.Repo.Posts.all/1`
-* `MyApp.Repo.Posts.get/2`
-* `MyApp.Repo.Posts.get!/2`
+- `MyApp.Repo.Posts.all/1`
+- `MyApp.Repo.Posts.get/2`
+- `MyApp.Repo.Posts.get!/2`
 
 ### Alias `:read_write` - generate data access and manipulation functions, excluding delete
 
@@ -239,16 +241,36 @@ defmodule MyApp.Repo.Posts do
 end
 ```
 
-This generates all the functions except `delete_schema/1` and `delete_schema!/1`:
+This generates all the functions except `delete/1` and `delete!/1`:
 
-* `MyApp.Repo.Posts.all/1`
-* `MyApp.Repo.Posts.change/1`
-* `MyApp.Repo.Posts.create/1`
-* `MyApp.Repo.Posts.create!/1`
-* `MyApp.Repo.Posts.get/2`
-* `MyApp.Repo.Posts.get!/2`
-* `MyApp.Repo.Posts.update/2`
-* `MyApp.Repo.Posts.update!/2`
+- `MyApp.Repo.Posts.all/1`
+- `MyApp.Repo.Posts.change/1`
+- `MyApp.Repo.Posts.create/1`
+- `MyApp.Repo.Posts.create!/1`
+- `MyApp.Repo.Posts.get/2`
+- `MyApp.Repo.Posts.get!/2`
+- `MyApp.Repo.Posts.update/2`
+- `MyApp.Repo.Posts.update!/2`
+
+### Alias `:delete` – generate only delete helpers
+
+```elixir
+defmodule MyApp.Repo.Posts do
+  alias MyApp.Repo
+  alias MyApp.Schema.Post
+
+  use EctoCooler
+
+  using_repo(Repo) do
+    resource(Post, :delete)
+  end
+end
+```
+
+Generated functions:
+
+- `MyApp.Repo.Posts.delete/1`
+- `MyApp.Repo.Posts.delete!/1`
 
 ### Resource functions
 
@@ -305,7 +327,7 @@ iex> Posts.change(%{title: "Example Post"})
   action: nil,
   changes: %{title: "Example Post"},
   errors: [],
-  data: #Person<>,
+  data: #Post<>,
   valid?: true
 >
 ```
@@ -423,11 +445,11 @@ iex> Posts.get_by!(%{title: "Doesn't Exist"})
 
 #### Posts.update
 
-Updates a given %Post{} with the given attributes, returns an `:ok`/`:error` tuple.
+Updates a given `%Post{}` with the given attributes, returning an `{:ok, %Post{}}` or `{:error, Ecto.Changeset}` tuple.
 
 ```elixir
-iex> Posts.update(%Post{id: 1}, %{title: "New Post"})
-{:ok, %Post{id: 1, title: "New Post"}}
+iex> Posts.update(%Post{id: 1}, %{title: "Updated Title"})
+{:ok, %Post{id: 1, title: "Updated Title"}}
 
 iex> Posts.update(%Post{id: 1}, %{invalid: "invalid"})
 {:error, %Ecto.Changeset}
@@ -435,42 +457,44 @@ iex> Posts.update(%Post{id: 1}, %{invalid: "invalid"})
 
 #### Posts.update!
 
-Updates a given %Person{} with the given attributes, returns a %Person{} or raises `Ecto.InvalidChangesetError`.
+Updates a given `%Post{}` with the given attributes, returning a `%Post{}` or raising `Ecto.InvalidChangesetError`.
 
 ```elixir
-iex> Posts.update!(%Person{id: 1}, %{name: "New Person"})
-%Person{id: 1, name: "New Person"}
+iex> Posts.update!(%Post{id: 1}, %{title: "Updated Title"})
+%Post{id: 1, title: "Updated Title"}
 
-iex> Posts.update!(%Person{id: 1}, %{invalid: "invalid"})
+iex> Posts.update!(%Post{id: 1}, %{invalid: "invalid"})
 ** (Ecto.InvalidChangesetError)
 ```
-Generators
-----------
+
+## Generators
+
 Generators are basically `EctoCooler` replacements for Phoenix Context and Schema generators.
 
 ### mix ectc.gen.repo
 
 This generator will generate a Repo module, a Schema module, and a Migration file with the given options. The options from left to right are: [repo name] [schema name] [table name] [attributes]
 
-```bash`
-  mix ectc.gen.repo Posts Post posts title:string author:string
+```bash
+
+mix ectc.gen.repo Posts Post posts title:string author:string
+
 ```
 
 This will create the following files:
-```
+
+```bash
 /lib/my_app/repo/posts.ex
 /lib/my_app/schema/post.ex
 lib/priv/repo/migrations/00000000000000000_create_posts.exs
+
 ```
 
-Caveats
--------
-This is not meant to be used as a wrapper for all the Repo functions within a context. Not all callbacks defined in Ecto.Repo are generated. `EctoCooler` should be used to help reduce boilerplate code and tests for general CRUD operations.
+## Caveats
 
-It may be the case that `EctoCooler` needs to evolve and provide slightly more functionality/flexibility in the future. However, the general focus is reducing boilerplate code.
+This package is meant to bring a lot of "out-of-the-box" basic functionality for working with Ecto schemas/queries and reducing boilerplate. Some contexts may never need to have anything more than EctoCooler while others will accumulate many custom queries/commands. EctoCooler is a lightweight foundation which can be built upon or worked around completely. _Be wary of your use of `all()`_.
 
-Contribution
-------------
+## Contribution
 
 ### Bug reports
 
@@ -480,20 +504,22 @@ If you discover any bugs, feel free to create an issue on [GitHub](https://githu
 
 ### Pull requests
 
-* Fork it (https://github.com/daytonn/ecto_cooler/fork)
-* Add upstream remote (`git remote add upstream git@github.com:daytonn/ecto_cooler.git`)
-* Make sure you're up-to-date with upstream main (`git pull upstream main`)
-* Create your feature branch (`git checkout -b feature/fooBar`)
-* Commit your changes (`git commit -am 'Add some fooBar'`)
-* Push to the branch (`git push origin feature/fooBar`)
-* Create a new Pull Request
+- Fork it (https://github.com/daytonn/ecto_cooler/fork)
+- Add upstream remote (`git remote add upstream git@github.com:daytonn/ecto_cooler.git`)
+- Make sure you're up-to-date with upstream main (`git pull upstream main`)
+- Create your feature branch (`git checkout -b feature/fooBar`)
+- Commit your changes (`git commit -am 'Add some fooBar'`)
+- Push to the branch (`git push origin feature/fooBar`)
+- Create a new Pull Request
 
 ### Nice to have features/improvements (:point_up::wink:)
 
-* Ability to override pluralization
-* Find functions (maybe?)
+- Ability to override pluralization
 
+## License
 
-License
--------
 [Apache 2.0](https://raw.githubusercontent.com/daytonn/ecto_cooler/main/LICENSE.txt)
+
+```
+
+```

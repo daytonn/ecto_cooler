@@ -23,12 +23,6 @@ defmodule EctoCooler.ReadTest do
     age: 42
   }
 
-  @updated_person_attributes %{
-    first_name: "Updated Test",
-    last_name: "Updated Person",
-    age: 33
-  }
-
   describe "all" do
     test "it returns all the records" do
       person = struct(Person, @person_attributes)
@@ -43,65 +37,37 @@ defmodule EctoCooler.ReadTest do
 
   describe "change" do
     test "it doesn't create a change function" do
-      person = %Person{
-        first_name: "Initial",
-        last_name: "Value",
-        age: 0
-      }
-
-      assert_raise UndefinedFunctionError, fn ->
-        People.change(person, @person_attributes)
-      end
+      refute Keyword.has_key?(People.__info__(:functions), :change)
     end
   end
 
   describe "changeset" do
     test "it doesn't create a changeset function" do
-      assert_raise UndefinedFunctionError, fn ->
-        People.changeset()
-      end
+      refute Keyword.has_key?(People.__info__(:functions), :changeset)
     end
   end
 
   describe "create" do
     test "it doesn't create a create function" do
-      assert_raise UndefinedFunctionError, fn ->
-        People.create(@person_attributes)
-      end
+      refute Keyword.has_key?(People.__info__(:functions), :create)
     end
   end
 
   describe "create!" do
     test "it doesn't create a create! function" do
-      assert_raise UndefinedFunctionError, fn ->
-        People.create!(@person_attributes)
-      end
+      refute Keyword.has_key?(People.__info__(:functions), :create!)
     end
   end
 
   describe "delete" do
     test "it doesn't create a delete function" do
-      {:ok, person} =
-        %Person{}
-        |> Person.changeset(@person_attributes)
-        |> Repo.insert()
-
-      assert_raise UndefinedFunctionError, fn ->
-        People.delete(person)
-      end
+      refute Keyword.has_key?(People.__info__(:functions), :delete)
     end
   end
 
   describe "delete!" do
     test "it doesn't create a delete! function" do
-      {:ok, person} =
-        %Person{}
-        |> Person.changeset(@person_attributes)
-        |> Repo.insert()
-
-      assert_raise UndefinedFunctionError, fn ->
-        People.delete!(person)
-      end
+      refute Keyword.has_key?(People.__info__(:functions), :delete!)
     end
   end
 
@@ -165,27 +131,13 @@ defmodule EctoCooler.ReadTest do
 
   describe "update" do
     test "it doesn't create an update function" do
-      {:ok, person} =
-        Person
-        |> struct(@person_attributes)
-        |> Repo.insert()
-
-      assert_raise UndefinedFunctionError, fn ->
-        People.update(person, @updated_person_attributes)
-      end
+      refute Keyword.has_key?(People.__info__(:functions), :update)
     end
   end
 
   describe "update!" do
     test "it doesn't create an update function" do
-      {:ok, person} =
-        Person
-        |> struct(@person_attributes)
-        |> Repo.insert()
-
-      assert_raise UndefinedFunctionError, fn ->
-        People.update!(person, @updated_person_attributes)
-      end
+      refute Keyword.has_key?(People.__info__(:functions), :update!)
     end
   end
 end

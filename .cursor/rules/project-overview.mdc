@@ -1,0 +1,44 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# EctoCooler Project Overview
+
+## Purpose
+EctoCooler is an Elixir library that eliminates boilerplate code involved in defining basic CRUD functions in Phoenix contexts or any Elixir module. It provides a DSL to automatically generate standard database operations for Ecto schemas.
+
+## Key Files
+- [mix.exs](mdc:mix.exs) - Project configuration and dependencies
+- [README.md](mdc:README.md) - Comprehensive documentation and usage examples
+- [lib/ecto_cooler.ex](mdc:lib/ecto_cooler.ex) - Main module with DSL macros
+- [lib/resource_functions.ex](mdc:lib/resource_functions.ex) - Core CRUD function implementations
+- [lib/helpers.ex](mdc:lib/helpers.ex) - Utility functions for schema name handling and pluralization
+- [lib/option_parser.ex](mdc:lib/option_parser.ex) - Configuration parsing for resource generation
+
+## Core Functionality
+- Generates CRUD functions (create, read, update, delete) for Ecto schemas
+- Supports automatic pluralization using Inflex
+- Provides both safe (returning tuples) and unsafe (raising errors) function variants
+- Allows customization through `only`, `except`, and alias options
+- Includes comprehensive documentation generation for each function
+
+## Usage Pattern
+```elixir
+defmodule MyApp.Repo.Posts do
+  alias MyApp.Repo
+  alias MyApp.Schema.Post
+
+  use EctoCooler
+
+  using_repo(Repo) do
+    resource(Post)
+  end
+end
+```
+
+## Dependencies
+- `ecto_sql` - For database operations
+- `inflex` - For pluralization
+- `bunt` - For colored output
+- `postgrex` - For PostgreSQL testing

@@ -4,16 +4,12 @@ defmodule EctoCooler.ResourceFunctions do
 
   @spec change(module, Ecto.Schema.t(), map() | Keyword.t()) :: Ecto.Changeset.t()
 
-  def change(schema, changeable, changes) when is_map(changes) do
+  def change(schema, changeable, changes) do
     changeable
-    |> schema.changeset(changes)
+    |> schema.changeset(normalize_attributes(changes))
   end
 
-  def change(schema, changeable, changes) when is_list(changes) do
-    change(schema, changeable, Enum.into(changes, %{}))
-  end
-
-  @spec changeset(Ecto.Schema.t()) :: Ecto.Changeset.t()
+  @spec changeset(module) :: Ecto.Changeset.t()
 
   def changeset(schema) do
     schema.changeset(struct(schema), %{})
@@ -22,28 +18,20 @@ defmodule EctoCooler.ResourceFunctions do
   @spec create(Ecto.Repo.t(), module, map() | Keyword.t()) ::
           {:ok, Ecto.Schema.t()} | {:error, Ecto.Changeset.t()}
 
-  def create(repo, schema, attributes) when is_map(attributes) do
+  def create(repo, schema, attributes) do
     schema
     |> struct()
-    |> schema.changeset(attributes)
+    |> schema.changeset(normalize_attributes(attributes))
     |> repo.insert([])
-  end
-
-  def create(repo, schema, attributes) when is_list(attributes) do
-    create(repo, schema, Enum.into(attributes, %{}))
   end
 
   @spec create!(Ecto.Repo.t(), module, map() | Keyword.t()) :: Ecto.Schema.t()
 
-  def create!(repo, schema, attributes) when is_map(attributes) do
+  def create!(repo, schema, attributes) do
     schema
     |> struct()
-    |> schema.changeset(attributes)
+    |> schema.changeset(normalize_attributes(attributes))
     |> repo.insert!([])
-  end
-
-  def create!(repo, schema, attributes) when is_list(attributes) do
-    create!(repo, schema, Enum.into(attributes, %{}))
   end
 
   @spec delete(Ecto.Repo.t(), Ecto.Schema.t()) ::
@@ -61,7 +49,7 @@ defmodule EctoCooler.ResourceFunctions do
     |> repo.delete!([])
   end
 
-  @spec get(Ecto.Repo.t(), module, term(), term()) :: Ecto.Schema.t() | nil
+  @spec get(Ecto.Repo.t(), module, term(), Keyword.t()) :: Ecto.Schema.t() | nil
 
   def get(repo, schema, id, options \\ []) do
     preloads = Keyword.get(options, :preloads, [])
@@ -71,7 +59,7 @@ defmodule EctoCooler.ResourceFunctions do
     |> repo.get(id, [])
   end
 
-  @spec get!(Ecto.Repo.t(), module, term(), term()) :: Ecto.Schema.t()
+  @spec get!(Ecto.Repo.t(), module, term(), Keyword.t()) :: Ecto.Schema.t()
 
   def get!(repo, schema, id, options \\ []) do
     preloads = Keyword.get(options, :preloads, [])
@@ -81,64 +69,66 @@ defmodule EctoCooler.ResourceFunctions do
     |> repo.get!(id, [])
   end
 
-  @spec get_by(EctoRepo.t(), Ecto.Queryable.t(), Keyword.t() | map(), Keyword.t()) ::
+  @spec get_by(Ecto.Repo.t(), Ecto.Queryable.t(), Keyword.t() | map(), Keyword.t()) ::
           Ecto.Schema.t() | nil
 
   def get_by(repo, schema, attributes, options \\ []) do
     preloads = Keyword.get(options, :preloads, [])
+    repo_opts = Keyword.delete(options, :preloads)
 
     schema
     |> preload(^preloads)
-    |> repo.get_by(attributes, options)
+    |> repo.get_by(attributes, repo_opts)
   end
 
-  @spec get_by!(EctoRepo.t(), Ecto.Queryable.t(), Keyword.t() | map(), Keyword.t()) ::
+  @spec get_by!(Ecto.Repo.t(), Ecto.Queryable.t(), Keyword.t() | map(), Keyword.t()) ::
           Ecto.Schema.t()
 
   def get_by!(repo, schema, attributes, options \\ []) do
     preloads = Keyword.get(options, :preloads, [])
+    repo_opts = Keyword.delete(options, :preloads)
 
     schema
     |> preload(^preloads)
-    |> repo.get_by!(attributes, options)
+    |> repo.get_by!(attributes, repo_opts)
   end
 
-  @spec all(Ecto.Repo.t(), module, term()) :: list(Ecto.Schema.t())
+  @spec all(Ecto.Repo.t(), module, Keyword.t()) :: list(Ecto.Schema.t())
 
   def all(repo, schema, options \\ []) do
-    preloads = Keyword.get(options, :preloads, [])
-    order_by = Keyword.get(options, :order_by, [])
-    where = Keyword.get(options, :where, [])
+    preloads   = Keyword.get(options, :preloads, [])
+    order_opts = Keyword.get(options, :order_by, [])
+    conditions = Keyword.get(options, :where, [])
 
-    schema
-    |> preload(^preloads)
-    |> order_by(^order_by)
-    |> where(^where)
-    |> repo.all([])
+    query = schema
+    query = if preloads == [], do: query, else: preload(query, ^preloads)
+    query = if order_opts == [], do: query, else: order_by(query, ^order_opts)
+    query = if conditions == [], do: query, else: where(query, ^conditions)
+
+    repo.all(query, [])
   end
 
   @spec update(Ecto.Repo.t(), module, Ecto.Schema.t(), map() | Keyword.t()) ::
           {:ok, Ecto.Schema.t()} | {:error, Ecto.Changeset.t()}
 
-  def update(repo, schema, updateable, attributes) when is_map(attributes) do
+  def update(repo, schema, updateable, attributes) do
     updateable
-    |> schema.changeset(attributes)
+    |> schema.changeset(normalize_attributes(attributes))
     |> repo.update([])
-  end
-
-  def update(repo, schema, updateable, attributes) when is_list(attributes) do
-    update(repo, schema, updateable, Enum.into(attributes, %{}))
   end
 
   @spec update!(Ecto.Repo.t(), module, Ecto.Schema.t(), map() | Keyword.t()) :: Ecto.Schema.t()
 
-  def update!(repo, schema, updateable, attributes) when is_map(attributes) do
+  def update!(repo, schema, updateable, attributes) do
     updateable
-    |> schema.changeset(attributes)
+    |> schema.changeset(normalize_attributes(attributes))
     |> repo.update!([])
   end
 
-  def update!(repo, schema, updateable, attributes) when is_list(attributes) do
-    update!(repo, schema, updateable, Enum.into(attributes, %{}))
-  end
+  # ---------------------------------------------------------------------------
+  # Private helpers
+  # ---------------------------------------------------------------------------
+
+  defp normalize_attributes(attrs) when is_list(attrs), do: Enum.into(attrs, %{})
+  defp normalize_attributes(attrs), do: attrs
 end

@@ -43,23 +43,13 @@ defmodule EctoCooler.ExceptFilterTest do
 
   describe "change" do
     test "doesn't create a change function" do
-      person = %Person{
-        first_name: "Initial",
-        last_name: "Value",
-        age: 0
-      }
-
-      assert_raise UndefinedFunctionError, fn ->
-        People.change(person, @person_attributes)
-      end
+      refute Keyword.has_key?(People.__info__(:functions), :change)
     end
   end
 
   describe "changeset" do
     test "it doesn't create a changeset function" do
-      assert_raise UndefinedFunctionError, fn ->
-        People.changeset()
-      end
+      refute Keyword.has_key?(People.__info__(:functions), :changeset)
     end
   end
 

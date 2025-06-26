@@ -1,0 +1,105 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Contributing Guide
+
+## Development Setup
+
+### Prerequisites
+- Elixir 1.14.4 or later
+- PostgreSQL (via Docker)
+- Git
+
+### Initial Setup
+```bash
+# Clone the repository
+git clone <repository-url>
+cd ecto_cooler
+
+# Install dependencies
+mix deps.get
+
+# Start test database
+docker-compose up -d
+
+# Run tests to verify setup
+mix test
+```
+
+## Code Standards
+
+### Elixir Conventions
+- Follow the [Elixir Style Guide](mdc:https:/github.com/christopheradams/elixir_style_guide)
+- Use `mix format` to format code
+- Run `mix dialyzer` for type checking
+- Ensure all tests pass before submitting
+
+### Documentation
+- All public functions must have `@doc` and `@spec` attributes
+- Use [ExDoc](mdc:https:/hexdocs.pm/ex_doc) format for documentation
+- Include examples in documentation
+- Update [README.md](mdc:README.md) for user-facing changes
+
+### Testing Requirements
+- All new features must have tests
+- Maintain 100% test coverage for core functionality
+- Test both success and error cases
+- Use descriptive test names
+
+## Development Workflow
+
+### Feature Development
+1. Create a feature branch from `main`
+2. Implement the feature with tests
+3. Update documentation if needed
+4. Run the full test suite
+5. Submit a pull request
+
+### Bug Fixes
+1. Create a bug fix branch
+2. Add a test that reproduces the bug
+3. Fix the bug
+4. Ensure all tests pass
+5. Submit a pull request
+
+### Code Review Process
+- All changes require review
+- Ensure tests pass in CI
+- Check code formatting and style
+- Verify documentation updates
+
+## Project Structure
+
+### Key Directories
+- [lib/](mdc:lib) - Main source code
+- [test/](mdc:test) - Test files
+- [priv/](mdc:priv) - Static assets and migrations
+- [config/](mdc:config) - Configuration files
+- [doc/](mdc:doc) - Generated documentation
+
+### Important Files
+- [mix.exs](mdc:mix.exs) - Project configuration
+- [CHANGELOG.md](mdc:CHANGELOG.md) - Version history
+- [LICENSE](mdc:LICENSE) - Project license
+- [docker-compose.yml](mdc:docker-compose.yml) - Test database setup
+
+## Release Process
+
+### Version Management
+- Follow [Semantic Versioning](mdc:https:/semver.org)
+- Update version in [mix.exs](mdc:mix.exs)
+- Update [CHANGELOG.md](mdc:CHANGELOG.md) with changes
+- Tag releases in Git
+
+### Publishing
+- Ensure all tests pass
+- Generate documentation: `mix docs`
+- Publish to Hex: `mix hex.publish`
+
+## Getting Help
+- Check existing issues and pull requests
+- Review [README.md](mdc:README.md) for usage examples
+- Look at test files for implementation patterns
+- Ask questions in GitHub issues
