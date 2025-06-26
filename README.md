@@ -1,6 +1,6 @@
 # EctoCooler
 
-![Ecto Cooler Logo](https://repository-images.githubusercontent.com/628352289/291d151f-76d9-4e9b-8321-665038706764)
+![Ecto Cooler Logo](https://github.com/daytonn/ecto_cooler/blob/2d89eeaf1de6b4c9f754a2f48756e4da5ff9015f/mascott.png)
 
 - [About](#about)
 - [Features](#features)
