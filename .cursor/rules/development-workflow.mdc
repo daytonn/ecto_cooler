@@ -1,0 +1,56 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Development Workflow
+
+## Project Structure
+- [lib/](mdc:lib) - Main source code
+- [test/](mdc:test) - Test files and test support
+- [priv/](mdc:priv) - Test database migrations
+- [config/](mdc:config) - Application configuration
+- [mix.exs](mdc:mix.exs) - Project definition and dependencies
+
+## Testing
+- [test/test_helper.exs](mdc:test/test_helper.exs) - Test setup and configuration
+- [test/support/](mdc:test/support) - Test support modules and schemas
+- [test/ecto_cooler/](mdc:test/ecto_cooler) - Main test modules for different features
+
+## Key Test Files
+- [test/ecto_cooler/read_test.exs](mdc:test/ecto_cooler/read_test.exs) - Tests for read operations
+- [test/ecto_cooler/read_write_test.exs](mdc:test/ecto_cooler/read_write_test.exs) - Tests for read/write operations
+- [test/ecto_cooler/option_parser_test.exs](mdc:test/ecto_cooler/option_parser_test.exs) - Tests for option parsing
+- [test/support/repo_case.ex](mdc:test/support/repo_case.ex) - Test case for database operations
+
+## Development Commands
+```bash
+# Run all tests
+mix test
+
+# Run tests with coverage
+mix test --cover
+
+# Run specific test file
+mix test test/ecto_cooler/read_test.exs
+
+# Generate documentation
+mix docs
+
+# Check code formatting
+mix format --check-formatted
+
+# Run dialyzer for type checking
+mix dialyzer
+```
+
+## Test Database
+- Uses PostgreSQL for testing via [docker-compose.yml](mdc:docker-compose.yml)
+- Test migrations in [priv/test_repo/migrations/](mdc:priv/test_repo/migrations)
+- Test schema in [test/support/test_schema/person.ex](mdc:test/support/test_schema/person.ex)
+
+## Code Organization
+- Core DSL macros in [lib/ecto_cooler.ex](mdc:lib/ecto_cooler.ex)
+- CRUD implementations in [lib/resource_functions.ex](mdc:lib/resource_functions.ex)
+- Utility functions in [lib/helpers.ex](mdc:lib/helpers.ex)
+- Option parsing in [lib/option_parser.ex](mdc:lib/option_parser.ex)

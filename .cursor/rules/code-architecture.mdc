@@ -1,0 +1,65 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Code Architecture
+
+## Core Modules
+
+### Main DSL Module
+[lib/ecto_cooler.ex](mdc:lib/ecto_cooler.ex) contains the main DSL macros:
+- `__using__/1` - Imports the `using_repo/2` macro
+- `using_repo/2` - Defines the repository context and processes resource blocks
+- `resource/2` - Generates CRUD functions for a schema
+
+### Resource Functions
+[lib/resource_functions.ex](mdc:lib/resource_functions.ex) implements the actual CRUD operations:
+- `all/3` - Fetch all records with optional filtering
+- `get/4` and `get!/4` - Fetch single record by ID
+- `get_by/4` and `get_by!/4` - Fetch single record by attributes
+- `create/3` and `create!/3` - Insert new records
+- `update/4` and `update!/4` - Update existing records
+- `delete/2` and `delete!/2` - Delete records
+- `change/3` - Create changesets
+- `changeset/1` - Create blank changesets
+
+### Helper Functions
+[lib/helpers.ex](mdc:lib/helpers.ex) provides utility functions:
+- Schema name extraction and pluralization
+- Function description generation
+- Resource function mapping
+
+### Option Parser
+[lib/option_parser.ex](mdc:lib/option_parser.ex) handles configuration:
+- Parses `only`, `except`, and alias options
+- Generates function names with suffixes
+- Maps aliases to function sets
+
+## Macro Expansion Process
+
+1. **Module Setup**: `using_repo/2` registers module attributes for repo and resources
+2. **Resource Processing**: `resource/2` parses options and generates function definitions
+3. **Function Generation**: Each CRUD operation gets its own function with documentation
+4. **Cleanup**: Module attributes are cleaned up after expansion
+
+## Generated Functions
+
+The DSL generates these function patterns:
+- `all/1` - Fetch all records
+- `get/2` and `get!/2` - Get by ID
+- `get_by/2` and `get_by!/2` - Get by attributes
+- `create/1` and `create!/1` - Create new record
+- `update/2` and `update!/2` - Update existing record
+- `delete/1` and `delete!/1` - Delete record
+- `change/2` - Create changeset
+- `changeset/0` - Create blank changeset
+
+## Configuration Options
+
+- `suffix: true` - Adds resource name suffix to functions
+- `only: [:create, :delete]` - Generate only specified functions
+- `except: [:delete]` - Generate all functions except specified ones
+- `:read` - Generate read-only functions
+- `:read_write` - Generate read and write functions (no delete)
+- `:delete` - Generate only delete functions

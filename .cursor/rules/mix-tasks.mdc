@@ -1,0 +1,65 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Mix Tasks
+
+## Available Generators
+
+EctoCooler provides several Mix tasks for generating Phoenix application components:
+
+### Schema Generator
+[lib/mix/tasks/ecto_cooler/ectc.gen.schema.ex](mdc:lib/mix/tasks/ecto_cooler/ectc.gen.schema.ex)
+```bash
+mix ectc.gen.schema SchemaName field:type field:type
+```
+Generates:
+- Schema module with Ecto schema definition
+- Migration file for the table
+- Basic changeset function
+
+### Repository Generator
+[lib/mix/tasks/ecto_cooler/ectc.gen.repo.ex](mdc:lib/mix/tasks/ecto_cooler/ectc.gen.repo.ex)
+```bash
+mix ectc.gen.repo RepoName
+```
+Generates:
+- Repository module with Ecto.Repo configuration
+- Database configuration setup
+
+### Migration Generator
+[lib/mix/tasks/ecto_cooler/ectc.gen.migration.ex](mdc:lib/mix/tasks/ecto_cooler/ectc.gen.migration.ex)
+```bash
+mix ectc.gen.migration MigrationName
+```
+Generates:
+- Empty migration file with timestamp
+- Basic migration structure
+
+### Resources Generator
+[lib/mix/tasks/ecto_cooler/resources.ex](mdc:lib/mix/tasks/ecto_cooler/resources.ex)
+```bash
+mix ectc.gen.resources SchemaName
+```
+Generates:
+- Context module with EctoCooler DSL
+- CRUD functions for the schema
+
+## Configuration
+
+Tasks use configuration from [config/config.exs](mdc:config/config.exs):
+- `app_name` - Application name for generated modules
+- `app_slug` - Application slug for file paths
+- `generators` - Generator-specific options
+- `migration_dir` - Directory for migration files
+- `repo_dir` - Directory for repository modules
+- `schema_dir` - Directory for schema modules
+
+## Task Dependencies
+
+Tasks are defined in [lib/mix/tasks/ecto_cooler/](mdc:lib/mix/tasks/ecto_cooler) and use:
+- [lib/templates/](mdc:lib/templates) - EEx templates for generated code
+- [lib/helpers.ex](mdc:lib/helpers.ex) - Utility functions for generation
+- [lib/env.ex](mdc:lib/env.ex) - Environment configuration helpers
+

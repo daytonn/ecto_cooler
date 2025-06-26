@@ -39,11 +39,11 @@ In short, at best, this code is redundant and at worst is a deviant entanglement
 
 - ### Generate CRUD functions for a given `Ecto.Repo` and `Ecto.Schema`
 
-  - `EctoCooler` can be used to generate CRUD functions for a given `Ecto.Repo` and `Ecto.Schema`. By default it will create every function needed to create, read, update, and delete the resouce. It includes the `!` version of each function (where relevant) that will raise an error instead of return an error tuple.
+  - `EctoCooler` can be used to generate CRUD functions for a given `Ecto.Repo` and `Ecto.Schema`. By default it will create every function needed to create, read, update, and delete the resource. It includes the `!` variant of each function (where relevant) that raises on failure rather than returning an error tuple.
 
 - ### Allow customization of generated resources
 
-  - You can optionally include or exclude specific functions to generate exactly the functions your context requires. There's also two handy aliases for generating read/write only functions.
+  - You can optionally include or exclude specific functions to generate exactly the functions your context requires. There are also handy aliases (`:read`, `:read_write`, `:delete`) for quickly generating common subsets of functions.
 
 - ### Automatic pluralization
 
@@ -63,7 +63,8 @@ This package is available in [Hex](https://hex.pm/), the package can be installe
 ```elixir
     def deps do
       [
-        {:ecto_cooler, "~> 2.0.7"}
+        # Use the latest 2.x release
+        {:ecto_cooler, "~> 2.0"}
       ]
     end
 ```
@@ -240,7 +241,7 @@ defmodule MyApp.Repo.Posts do
 end
 ```
 
-This generates all the functions except `delete_schema/1` and `delete_schema!/1`:
+This generates all the functions except `delete/1` and `delete!/1`:
 
 - `MyApp.Repo.Posts.all/1`
 - `MyApp.Repo.Posts.change/1`
@@ -250,6 +251,26 @@ This generates all the functions except `delete_schema/1` and `delete_schema!/1`
 - `MyApp.Repo.Posts.get!/2`
 - `MyApp.Repo.Posts.update/2`
 - `MyApp.Repo.Posts.update!/2`
+
+### Alias `:delete` – generate only delete helpers
+
+```elixir
+defmodule MyApp.Repo.Posts do
+  alias MyApp.Repo
+  alias MyApp.Schema.Post
+
+  use EctoCooler
+
+  using_repo(Repo) do
+    resource(Post, :delete)
+  end
+end
+```
+
+Generated functions:
+
+- `MyApp.Repo.Posts.delete/1`
+- `MyApp.Repo.Posts.delete!/1`
 
 ### Resource functions
 
@@ -306,7 +327,7 @@ iex> Posts.change(%{title: "Example Post"})
   action: nil,
   changes: %{title: "Example Post"},
   errors: [],
-  data: #Person<>,
+  data: #Post<>,
   valid?: true
 >
 ```
@@ -424,11 +445,11 @@ iex> Posts.get_by!(%{title: "Doesn't Exist"})
 
 #### Posts.update
 
-Updates a given %Post{} with the given attributes, returns an `:ok`/`:error` tuple.
+Updates a given `%Post{}` with the given attributes, returning an `{:ok, %Post{}}` or `{:error, Ecto.Changeset}` tuple.
 
 ```elixir
-iex> Posts.update(%Post{id: 1}, %{title: "New Post"})
-{:ok, %Post{id: 1, title: "New Post"}}
+iex> Posts.update(%Post{id: 1}, %{title: "Updated Title"})
+{:ok, %Post{id: 1, title: "Updated Title"}}
 
 iex> Posts.update(%Post{id: 1}, %{invalid: "invalid"})
 {:error, %Ecto.Changeset}
@@ -436,13 +457,13 @@ iex> Posts.update(%Post{id: 1}, %{invalid: "invalid"})
 
 #### Posts.update!
 
-Updates a given %Person{} with the given attributes, returns a %Person{} or raises `Ecto.InvalidChangesetError`.
+Updates a given `%Post{}` with the given attributes, returning a `%Post{}` or raising `Ecto.InvalidChangesetError`.
 
 ```elixir
-iex> Posts.update!(%Person{id: 1}, %{name: "New Person"})
-%Person{id: 1, name: "New Person"}
+iex> Posts.update!(%Post{id: 1}, %{title: "Updated Title"})
+%Post{id: 1, title: "Updated Title"}
 
-iex> Posts.update!(%Person{id: 1}, %{invalid: "invalid"})
+iex> Posts.update!(%Post{id: 1}, %{invalid: "invalid"})
 ** (Ecto.InvalidChangesetError)
 ```
 
@@ -455,13 +476,14 @@ Generators are basically `EctoCooler` replacements for Phoenix Context and Schem
 This generator will generate a Repo module, a Schema module, and a Migration file with the given options. The options from left to right are: [repo name] [schema name] [table name] [attributes]
 
 ```bash
+
 mix ectc.gen.repo Posts Post posts title:string author:string
 
 ```
 
 This will create the following files:
 
-```
+```bash
 /lib/my_app/repo/posts.ex
 /lib/my_app/schema/post.ex
 lib/priv/repo/migrations/00000000000000000_create_posts.exs

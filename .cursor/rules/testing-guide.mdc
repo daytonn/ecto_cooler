@@ -1,0 +1,84 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Testing Guide
+
+## Test Structure
+
+### Test Support
+- [test/test_helper.exs](mdc:test/test_helper.exs) - Test setup and ExUnit configuration
+- [test/support/repo_case.ex](mdc:test/support/repo_case.ex) - Database test case with transaction support
+- [test/support/test_schema/person.ex](mdc:test/support/test_schema/person.ex) - Test schema for CRUD operations
+
+### Test Categories
+- [test/ecto_cooler/read_test.exs](mdc:test/ecto_cooler/read_test.exs) - Read operation tests
+- [test/ecto_cooler/read_write_test.exs](mdc:test/ecto_cooler/read_write_test.exs) - Read/write operation tests
+- [test/ecto_cooler/option_parser_test.exs](mdc:test/ecto_cooler/option_parser_test.exs) - Option parsing tests
+- [test/ecto_cooler/except_filter_test.exs](mdc:test/ecto_cooler/except_filter_test.exs) - Except filter tests
+- [test/ecto_cooler/only_filter_test.exs](mdc:test/ecto_cooler/only_filter_test.exs) - Only filter tests
+- [test/ecto_cooler/with_suffix_test.exs](mdc:test/ecto_cooler/with_suffix_test.exs) - Suffix option tests
+- [test/ecto_cooler/defaults_test.exs](mdc:test/ecto_cooler/defaults_test.exs) - Default behavior tests
+
+## Test Database Setup
+
+### Migration
+- [priv/test_repo/migrations/20200410023114_create_people.exs](mdc:priv/test_repo/migrations/20200410023114_create_people.exs) - Creates people table for testing
+
+### Test Repository
+- [lib/test_repo.ex](mdc:lib/test_repo.ex) - Test repository configuration
+- Uses PostgreSQL via [docker-compose.yml](mdc:docker-compose.yml)
+
+## Testing Patterns
+
+### Module Testing
+Tests verify that the DSL generates the correct functions:
+```elixir
+defmodule TestModule do
+  use EctoCooler
+  
+  using_repo(EctoCooler.TestRepo) do
+    resource(Person)
+  end
+end
+```
+
+### Function Generation Tests
+- Verify all expected functions are generated
+- Test function arities and documentation
+- Check that options (only, except, suffix) work correctly
+
+### CRUD Operation Tests
+- Test successful operations
+- Test error cases
+- Verify return values and error tuples
+- Test with and without preloads
+
+### Option Parser Tests
+- Test `only` option with various function lists
+- Test `except` option with various function lists
+- Test suffix generation
+- Test alias expansion (`:read`, `:read_write`, `:delete`)
+
+## Running Tests
+
+```bash
+# Run all tests
+mix test
+
+# Run specific test file
+mix test test/ecto_cooler/read_test.exs
+
+# Run tests with coverage
+mix test --cover
+
+# Run tests in parallel
+mix test --max-failures=1
+```
+
+## Test Data
+- Uses `Person` schema for all CRUD tests
+- Creates test records in `setup` blocks
+- Cleans up data in `on_exit` callbacks
+- Uses transactions for test isolation
