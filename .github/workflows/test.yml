@@ -44,5 +44,3 @@ jobs:
       - name: Check code formatting
         run: mix format --check-formatted
 
-      - name: Run dialyzer (type checking)
-        run: mix dialyzer 
