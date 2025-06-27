@@ -37,8 +37,8 @@ jobs:
       - name: Set up Elixir & OTP
         uses: erlef/setup-beam@v1
         with:
-          elixir-version: "1.15" # adjust as needed
-          otp-version: "26"
+          elixir-version: "1.18" # adjust as needed
+          otp-version: "27"
 
       - name: Install dependencies
         run: mix deps.get

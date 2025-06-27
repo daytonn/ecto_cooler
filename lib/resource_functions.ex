@@ -96,7 +96,7 @@ defmodule EctoCooler.ResourceFunctions do
   @spec all(Ecto.Repo.t(), module, Keyword.t()) :: list(Ecto.Schema.t())
 
   def all(repo, schema, options \\ []) do
-    preloads   = Keyword.get(options, :preloads, [])
+    preloads = Keyword.get(options, :preloads, [])
     order_opts = Keyword.get(options, :order_by, [])
     conditions = Keyword.get(options, :where, [])
 
