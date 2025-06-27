@@ -1,0 +1,45 @@
+name: Cut Release
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+jobs:
+  release:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # allow pushing tags and commits
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # fetch tags and history for git_ops
+
+      - name: Set up Elixir & OTP
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: "1.15" # adjust as needed
+          otp-version: "26"
+
+      - name: Install dependencies
+        run: mix deps.get
+
+      - name: Run tests
+        run: mix test
+
+      - name: Run git_ops release (auto-version)
+        id: git_ops
+        env:
+          GIT_COMMITTER_NAME: github-actions[bot]
+          GIT_COMMITTER_EMAIL: github-actions[bot]@users.noreply.github.com
+          GIT_AUTHOR_NAME: github-actions[bot]
+          GIT_AUTHOR_EMAIL: github-actions[bot]@users.noreply.github.com
+        run: |
+          mix git_ops.release --yes || echo "No version bump needed"
+
+      - name: Push commits & tags
+        run: |
+          git push origin HEAD:main --follow-tags 

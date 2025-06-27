@@ -1,0 +1,40 @@
+name: Publish to Hex
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    environment:
+      name: hex
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Elixir & OTP
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: "1.15"
+          otp-version: "26"
+
+      - name: Install dependencies
+        run: mix deps.get
+
+      - name: Build hex package
+        run: mix hex.build
+
+      - name: Publish to Hex.pm
+        env:
+          HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
+        run: |
+          echo "#########################"
+          echo "Publishing version $GITHUB_REF_NAME to Hex.pm"
+          echo "#########################"          
+          mix hex.publish --yes --replace <<< "${HEX_API_KEY}" 
