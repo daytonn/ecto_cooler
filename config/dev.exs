@@ -10,7 +10,7 @@ config :ecto_cooler, EctoCooler.TestRepo,
   pool: Ecto.Adapters.SQL.Sandbox
 
 # Print only warnings and errors during test
-config :logger, level: :warn
+config :logger, level: :warning
 
 config :ecto_cooler,
   app_name: "EctoCooler",
