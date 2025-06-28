@@ -18,6 +18,11 @@
 - [Contribution](#contribution)
   - [Bug reports](#bug_reports)
   - [Pull requests](#pull_requests)
+- [Release Workflow](#release-workflow)
+  - [Branch Naming Convention](#branch-naming-convention)
+  - [What Happens on Merge](#what-happens-on-merge)
+  - [Skipping Releases](#skipping-releases)
+  - [Manual Releases](#manual-releases)
 - [License](#license)
 - [Authors](#authors)
 
@@ -515,6 +520,49 @@ If you discover any bugs, feel free to create an issue on [GitHub](https://githu
 ### Nice to have features/improvements (:point_up::wink:)
 
 - Ability to override pluralization
+
+## Release Workflow
+
+This project uses a conventional commit-based release workflow that automatically creates releases when pull requests are merged to the main branch.
+
+### Branch Naming Convention
+
+To trigger a release, your branch name must follow the conventional commit format:
+
+- **Major version bump**: `major/description` or `breaking/description`
+  - Example: `major/breaking-api-changes`
+- **Minor version bump**: `minor/description` or `feature/description`
+  - Example: `feature/add-new-generator`
+- **Patch version bump**: `patch/description`, `fix/description`, `bugfix/description`, or `hotfix/description`
+  - Example: `fix/resolve-version-parsing-issue`
+
+### What Happens on Merge
+
+When a pull request with a conventional commit branch name is merged to main:
+
+1. **Version Detection**: The workflow analyzes the branch name to determine the version bump type
+2. **Version Update**: Updates the version in `mix.exs` according to semantic versioning
+3. **Changelog Update**: 
+   - Creates a new version entry in `CHANGELOG.md`
+   - Adds the PR title to the appropriate section (Added/Changed/Fixed)
+4. **Release Tag**: Creates and pushes a git tag with the new version
+5. **Commit**: Commits the version and changelog changes to main
+
+### Skipping Releases
+
+If your branch doesn't follow the conventional commit naming pattern, no release will be created. This is useful for:
+- Documentation updates
+- Test improvements
+- CI/CD changes
+- Any changes that don't warrant a version bump
+
+### Manual Releases
+
+For manual releases or when the automated workflow isn't suitable, you can:
+1. Create a branch with the appropriate prefix (e.g., `patch/manual-release`)
+2. Make your changes
+3. Create a pull request
+4. Merge to trigger the release
 
 ## License
 
