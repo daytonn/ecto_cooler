@@ -11,12 +11,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+### Removed
+
+### Fixed
+
+### Security
+# [2.0.7]
+
+### Added
+
+### Changed
 - Changed tests so no warnings are output to the console during test runs
 - Updated the README for clarity
 
 ### Removed
 
 ### Fixed
+- Dependency for inflex updated
 
 ### Security
 
