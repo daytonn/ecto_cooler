@@ -52,7 +52,7 @@ In short, at best, this code is redundant and at worst is a deviant entanglement
 
 - ### Automatic pluralization
 
-  - `EctoCooler` uses `Inflex` when generating functions to create readable english function names automatically. For example, given the schema `Person`, a function named `all_people/1` is generated.
+  - `EctoCooler` uses `DropsInflector` when generating functions to create readable english function names automatically. For example, given the schema `Person`, a function named `all_people/1` is generated.
 
 - ### Generate documentation for each generated function
 
@@ -285,7 +285,7 @@ The following examples will all assume a repo named `Posts` and a schema named `
 
 #### Resource.all
 
-Fetches a list of all %Post{} entries from the data store. _Note: `EctoCooler` will pluralize this function name using `Inflex`_
+Fetches a list of all %Post{} entries from the data store. _Note: `EctoCooler` will pluralize this function name using `Drops.Inflector`_
 
 ```elixir
 iex> Posts.all()

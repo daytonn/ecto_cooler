@@ -76,7 +76,9 @@ defmodule EctoCooler.OptionParser do
   def create_suffix(schema, _), do: Helpers.underscore_module_name(schema)
 
   defp function_name(function, ""), do: String.to_atom(function)
-  defp function_name("all", suffix), do: String.to_atom("all_" <> Inflex.pluralize(suffix))
+
+  defp function_name("all", suffix),
+    do: String.to_atom("all_" <> Drops.Inflector.pluralize(suffix))
 
   defp function_name("get_by", suffix) do
     String.to_atom("get_#{suffix}_by")
@@ -103,7 +105,7 @@ defmodule EctoCooler.OptionParser do
   end
 
   defp function_description("all", arity, suffix) do
-    "all_" <> Inflex.pluralize(suffix) <> "/" <> Integer.to_string(arity)
+    "all_" <> Drops.Inflector.pluralize(suffix) <> "/" <> Integer.to_string(arity)
   end
 
   defp function_description("get_by", arity, suffix) do

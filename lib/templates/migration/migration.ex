@@ -33,7 +33,7 @@ defmodule EctoCooler.Templates.Migration do
       |> Keyword.get(:binary_id, false)
       |> maybe_set_binary_id(app_slug)
 
-    repo_name = Inflex.pluralize(schema_name)
+    repo_name = Drops.Inflector.pluralize(schema_name)
     options = options(binary_id: binary_id)
     migration_dir = Env.get(:migration_dir, "priv/repo/migrations")
 

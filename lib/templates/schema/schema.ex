@@ -16,7 +16,7 @@ defmodule EctoCooler.Templates.Schema do
       |> Env.get([])
       |> Keyword.get(:binary_id, false)
 
-    instance_name = Inflex.singularize(table_name)
+    instance_name = Drops.Inflector.singularize(table_name)
     app_name = Env.get(:app_name, "EctoCooler")
 
     assigns = %{
@@ -32,7 +32,7 @@ defmodule EctoCooler.Templates.Schema do
 
     content = generate(assigns)
 
-    app_directory = Inflex.underscore(app_name)
+    app_directory = Drops.Inflector.underscore(app_name)
     schema_dir = Env.get(:schema_dir, "lib/#{app_directory}/schema")
     path = Path.expand(schema_dir)
     filepath = "#{path}/#{instance_name}.ex"
