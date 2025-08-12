@@ -55,12 +55,12 @@ defmodule EctoCooler.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:git_ops, "~> 2.0", only: [:dev], runtime: false},
       {:bunt, "~> 1.0"},
-      {:igniter, "~> 0.5", only: [:dev, :test]},
       {:ecto_sql, ">= 3.13.2"},
       {:ex_doc, ">= 0.38.2", only: :dev, runtime: false},
-      {:inflex, ">= 2.1.0"},
+      {:git_ops, "~> 2.0", only: [:dev], runtime: false},
+      {:igniter, "~> 0.5", only: [:dev, :test]},
+      {:inflex, github: "warmwaffles/inflex", branch: "master", override: true},
       {:postgrex, ">= 0.20.0", only: [:test]}
     ]
   end

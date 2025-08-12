@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Dependency for inflex updated
 
+
 ### Security
 
 ## [2.0.7]
