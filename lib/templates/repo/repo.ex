@@ -18,7 +18,7 @@ defmodule EctoCooler.Templates.Repo do
     assigns = %{
       app_name: app_name,
       repo_name: repo_name,
-      schema_name: Inflex.singularize(repo_name),
+      schema_name: Drops.Inflector.singularize(repo_name),
       suffix: suffix,
       repo_namespace: Env.get(:repo_namespace, "Repo"),
       schema_namespace: Env.get(:schema_namespace, "Schema")
@@ -26,9 +26,9 @@ defmodule EctoCooler.Templates.Repo do
 
     content = generate(assigns)
 
-    app_directory = Inflex.underscore(app_name)
+    app_directory = Drops.Inflector.underscore(app_name)
     repo_dir = Env.get(:repo_dir, "lib/#{app_directory}/repo")
-    repo_filename = "#{Inflex.underscore(repo_name)}.ex"
+    repo_filename = "#{Drops.Inflector.underscore(repo_name)}.ex"
 
     path = Path.expand(repo_dir)
     filepath = "#{path}/#{repo_filename}"

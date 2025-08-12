@@ -56,11 +56,11 @@ defmodule EctoCooler.MixProject do
   defp deps do
     [
       {:bunt, "~> 1.0"},
+      {:drops_inflector, "~> 0.1.0"},
       {:ecto_sql, ">= 3.13.2"},
       {:ex_doc, ">= 0.38.2", only: :dev, runtime: false},
       {:git_ops, "~> 2.0", only: [:dev], runtime: false},
       {:igniter, "~> 0.5", only: [:dev, :test]},
-      {:inflex, github: "warmwaffles/inflex", branch: "master", override: true},
       {:postgrex, ">= 0.20.0", only: [:test]}
     ]
   end
