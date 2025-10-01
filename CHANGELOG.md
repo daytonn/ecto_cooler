@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 # Unreleased
 
 ### Added
+- Added usage-rules.md for LLM agents
 
 ### Changed
 
@@ -16,6 +17,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 ### Security
+
+# [2.0.9]
+
+### Added
+- Added usage-rules.md for LLM agents
 
 # [2.0.8]
 
