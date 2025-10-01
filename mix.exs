@@ -40,7 +40,7 @@ defmodule EctoCooler.MixProject do
 
   defp package do
     [
-      files: ["lib", "mix.exs", "README*", "LICENSE*"],
+      files: ["lib", "mix.exs", "README*", "LICENSE*", "usage-rules.md"],
       maintainers: ["Dayton Nolan"],
       licenses: ["Apache 2.0"],
       links: %{"GitHub" => "https://github.com/daytonn/ecto_cooler"}
