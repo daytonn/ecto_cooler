@@ -4,7 +4,17 @@ defmodule Mix.Tasks.Ectc.Gen.Migration do
   @moduledoc """
   Generate an Ecto migration with more robust handling of binary ids.
 
-    mix ectc.gen.migration
+  ## Usage
+
+      mix ectc.gen.migration [schema_name] [table_name] [attributes...]
+
+  ## Example
+
+      mix ectc.gen.migration Post posts title:string author:string
+
+  This creates:
+
+    - `priv/repo/migrations/TIMESTAMP_create_posts.exs` — Ecto migration
   """
   @requirements ["app.config"]
 

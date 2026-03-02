@@ -7,24 +7,30 @@
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Usage](#usage)
-  - [Basic usage](#basic-usage---generate-all-ectoresource-functions)
+  - [Basic usage](#basic-usage---generate-all-ectocooler-functions)
   - [Explicit usage](#explicit-usage---generate-only-given-functions)
   - [Exclusive usage](#exclusive-usage---generate-all-but-the-given-functions)
   - [Alias :read](#alias-read---generate-data-access-functions)
   - [Alias :read_write](#alias-read_write---generate-data-access-and-manipulation-functions-excluding-delete)
+  - [Alias :write](#alias-write---generate-data-mutation-functions)
+  - [Alias :delete](#alias-delete---generate-only-delete-helpers)
   - [Resource functions](#resource-functions)
   - [Generators](#generators)
+    - [mix ectc.gen.repo](#mix-ectcgenrepo)
+    - [mix ectc.gen.schema](#mix-ectcgenschema)
+    - [mix ectc.gen.migration](#mix-ectcgenmigration)
+    - [mix ecto_cooler.resources](#mix-ecto_coolerresources)
+    - [Attribute format](#attribute-format)
 - [Caveats](#caveats)
 - [Contribution](#contribution)
-  - [Bug reports](#bug_reports)
-  - [Pull requests](#pull_requests)
+  - [Bug reports](#bug-reports)
+  - [Pull requests](#pull-requests)
 - [Release Workflow](#release-workflow)
   - [Branch Naming Convention](#branch-naming-convention)
   - [What Happens on Merge](#what-happens-on-merge)
   - [Skipping Releases](#skipping-releases)
   - [Manual Releases](#manual-releases)
 - [License](#license)
-- [Authors](#authors)
 
 Eliminate boilerplate involved in defining basic CRUD functions in a Phoenix context or Elixir module.
 
@@ -48,7 +54,7 @@ In short, at best, this code is redundant and at worst is a deviant entanglement
 
 - ### Allow customization of generated resources
 
-  - You can optionally include or exclude specific functions to generate exactly the functions your context requires. There are also handy aliases (`:read`, `:read_write`, `:delete`) for quickly generating common subsets of functions.
+  - You can optionally include or exclude specific functions to generate exactly the functions your context requires. There are also handy aliases (`:read`, `:read_write`, `:write`, `:delete`) for quickly generating common subsets of functions.
 
 - ### Automatic pluralization
 
@@ -95,10 +101,13 @@ config :ecto_cooler,
     repo_dir: "lib/my_app/repo",
     repo_namespace: "Repo",
     schema_dir: "lib/my_app/schema",
-    schema_namespace: "Schema"
+    schema_namespace: "Schema",
+    resources: [suffix: true]
 ```
 
 _NOTE: If `binary_id` is configured in your Phoenix configuration and you have `app_slug` defined in your `ecto_cooler` configuration, you don't need to specify the `generators: [binary_id: true]` in the `ecto_cooler` config since it will be picked up from the Phoenix configuration._
+
+_NOTE: The `resources: [suffix: true]` option controls whether generated repo modules use suffixed function names (e.g., `get_post/2` instead of `get/2`)._
 
 ## Usage
 
@@ -120,7 +129,8 @@ end
 This generates all the functions `EctoCooler` has to offer:
 
 - `MyApp.Repo.Posts.all/1`
-- `MyApp.Repo.Posts.change/1`
+- `MyApp.Repo.Posts.change/2`
+- `MyApp.Repo.Posts.changeset/0`
 - `MyApp.Repo.Posts.create/1`
 - `MyApp.Repo.Posts.create!/1`
 - `MyApp.Repo.Posts.delete/1`
@@ -150,7 +160,8 @@ end
 This generates all the functions `EctoCooler` with a suffix:
 
 - `MyApp.Repo.Posts.all_posts/1`
-- `MyApp.Repo.Posts.change_post/1`
+- `MyApp.Repo.Posts.change_post/2`
+- `MyApp.Repo.Posts.post_changeset/0`
 - `MyApp.Repo.Posts.create_post/1`
 - `MyApp.Repo.Posts.create_post!/1`
 - `MyApp.Repo.Posts.delete_post/1`
@@ -200,13 +211,14 @@ end
 This generates all the functions excluding the given functions:
 
 - `MyApp.Repo.Posts.all/1`
-- `MyApp.Repo.Posts.change/1`
+- `MyApp.Repo.Posts.change/2`
+- `MyApp.Repo.Posts.changeset/0`
 - `MyApp.Repo.Posts.create!/1`
 - `MyApp.Repo.Posts.delete/1`
 - `MyApp.Repo.Posts.get/2`
+- `MyApp.Repo.Posts.get!/2`
 - `MyApp.Repo.Posts.get_by/2`
 - `MyApp.Repo.Posts.get_by!/2`
-- `MyApp.Repo.Posts.get!/2`
 - `MyApp.Repo.Posts.update/2`
 - `MyApp.Repo.Posts.update!/2`
 
@@ -230,6 +242,8 @@ This generates all the functions necessary for reading data:
 - `MyApp.Repo.Posts.all/1`
 - `MyApp.Repo.Posts.get/2`
 - `MyApp.Repo.Posts.get!/2`
+- `MyApp.Repo.Posts.get_by/2`
+- `MyApp.Repo.Posts.get_by!/2`
 
 ### Alias `:read_write` - generate data access and manipulation functions, excluding delete
 
@@ -249,15 +263,44 @@ end
 This generates all the functions except `delete/1` and `delete!/1`:
 
 - `MyApp.Repo.Posts.all/1`
-- `MyApp.Repo.Posts.change/1`
+- `MyApp.Repo.Posts.change/2`
+- `MyApp.Repo.Posts.changeset/0`
 - `MyApp.Repo.Posts.create/1`
 - `MyApp.Repo.Posts.create!/1`
 - `MyApp.Repo.Posts.get/2`
 - `MyApp.Repo.Posts.get!/2`
+- `MyApp.Repo.Posts.get_by/2`
+- `MyApp.Repo.Posts.get_by!/2`
 - `MyApp.Repo.Posts.update/2`
 - `MyApp.Repo.Posts.update!/2`
 
-### Alias `:delete` – generate only delete helpers
+### Alias `:write` - generate data mutation functions
+
+```elixir
+defmodule MyApp.Repo.Posts do
+  alias MyApp.Repo
+  alias MyApp.Schema.Post
+
+  use EctoCooler
+
+  using_repo(Repo) do
+    resource(Post, :write)
+  end
+end
+```
+
+This generates all the functions that modify data, excluding read-only functions:
+
+- `MyApp.Repo.Posts.change/2`
+- `MyApp.Repo.Posts.changeset/0`
+- `MyApp.Repo.Posts.create/1`
+- `MyApp.Repo.Posts.create!/1`
+- `MyApp.Repo.Posts.update/2`
+- `MyApp.Repo.Posts.update!/2`
+- `MyApp.Repo.Posts.delete/1`
+- `MyApp.Repo.Posts.delete!/1`
+
+### Alias `:delete` - generate only delete helpers
 
 ```elixir
 defmodule MyApp.Repo.Posts do
@@ -283,29 +326,34 @@ The general idea of the generated resource functions is to abstract away the `Ec
 
 The following examples will all assume a repo named `Posts` and a schema named `Post`.
 
-#### Resource.all
+#### Posts.all
 
 Fetches a list of all %Post{} entries from the data store. _Note: `EctoCooler` will pluralize this function name using `Drops.Inflector`_
+
+Accepts the following keyword options:
+- `preloads` - a list of associations to preload
+- `order_by` - an Ecto order_by clause
+- `where` - a keyword list of field/value pairs to filter by
 
 ```elixir
 iex> Posts.all()
 [%Post{id: 1}]
 
-iex> Posts.all(preloads: [:address])
-[%Post{id: 1, comment: %Comment{}}]
+iex> Posts.all(preloads: [:comments])
+[%Post{id: 1, comments: [%Comment{}]}]
 
 iex> Posts.all(order_by: [desc: :id])
 [%Post{id: 2}, %Post{id: 1}]
 
-iex> Posts.all(preloads: [:comment], order_by: [desc: :id]))
+iex> Posts.all(preloads: [:comments], order_by: [desc: :id])
 [
   %Post{
     id: 2,
-    comment: %Comment{}
+    comments: [%Comment{}]
   },
   %Post{
     id: 1,
-    comment: %Comment{}
+    comments: [%Comment{}]
   }
 ]
 
@@ -320,17 +368,55 @@ iex> Posts.all(where: [category: "Testing"])
     category: "Testing"
   }
 ]
+
+iex> Posts.all(where: [category: "Testing"], order_by: [asc: :id], preloads: [:comments])
+[
+  %Post{
+    id: 42,
+    category: "Testing",
+    comments: [%Comment{}]
+  },
+  %Post{
+    id: 99,
+    category: "Testing",
+    comments: [%Comment{}]
+  }
+]
 ```
 
 #### Posts.change
 
-Creates a `%Post{}` changeset.
+Creates a changeset from an existing `%Post{}` struct with the given changes. Takes two arguments: the struct and a map or keyword list of changes.
 
 ```elixir
-iex> Posts.change(%{title: "Example Post"})
+iex> Posts.change(%Post{title: "Old Title"}, %{title: "New Title"})
+#Ecto.Changeset<
+  action: nil,
+  changes: %{title: "New Title"},
+  errors: [],
+  data: #Post<>,
+  valid?: true
+>
+
+iex> Posts.change(%Post{}, %{title: "Example Post"})
 #Ecto.Changeset<
   action: nil,
   changes: %{title: "Example Post"},
+  errors: [],
+  data: #Post<>,
+  valid?: true
+>
+```
+
+#### Posts.changeset
+
+Creates a blank changeset for `%Post{}`. Takes no arguments.
+
+```elixir
+iex> Posts.changeset()
+#Ecto.Changeset<
+  action: nil,
+  changes: %{},
   errors: [],
   data: #Post<>,
   valid?: true
@@ -346,7 +432,7 @@ iex> Posts.create(%{title: "Example Post"})
 {:ok, %Post{id: 123, title: "Example Post"}}
 
 iex> Posts.create(%{invalid: "invalid"})
-{:error, %Ecto.Changeset}
+{:error, %Ecto.Changeset{}}
 ```
 
 #### Posts.create!
@@ -370,7 +456,7 @@ iex> Posts.delete(%Post{id: 1})
 {:ok, %Post{id: 1}}
 
 iex> Posts.delete(%Post{id: 999})
-{:error, %Ecto.Changeset}
+{:error, %Ecto.Changeset{}}
 ```
 
 #### Posts.delete!
@@ -389,6 +475,8 @@ iex> Posts.delete!(%Post{id: 999})
 
 Fetches a single `%Post{}` from the data store where the primary key matches the given id, returns a `%Post{}` or `nil`.
 
+Accepts an optional keyword list with `preloads`.
+
 ```elixir
 iex> Posts.get(1)
 %Post{id: 1}
@@ -396,16 +484,18 @@ iex> Posts.get(1)
 iex> Posts.get(999)
 nil
 
-iex> Posts.get(1, preloads: [:address])
+iex> Posts.get(1, preloads: [:comments])
 %Post{
     id: 1,
-    address: %Address{}
+    comments: [%Comment{}]
 }
 ```
 
 #### Posts.get!
 
 Fetches a single `%Post{}` from the data store where the primary key matches the given id, returns a `%Post{}` or raises `Ecto.NoResultsError`.
+
+Accepts an optional keyword list with `preloads`.
 
 ```elixir
 iex> Posts.get!(1)
@@ -417,15 +507,16 @@ iex> Posts.get!(999)
 iex> Posts.get!(1, preloads: [:comments])
 %Post{
     id: 1,
-    comments: [%Comment{}],
-    ...
+    comments: [%Comment{}]
 }
 ```
 
 #### Posts.get_by
 
 Fetches a single `%Post{}` from the data store where the attributes match the
-given values.
+given values. Returns `nil` if no record is found.
+
+Accepts an optional second argument keyword list with `preloads`.
 
 ```elixir
 iex> Posts.get_by(%{title: "Example Title"})
@@ -433,12 +524,17 @@ iex> Posts.get_by(%{title: "Example Title"})
 
 iex> Posts.get_by(%{title: "Doesn't Exist"})
 nil
+
+iex> Posts.get_by(%{title: "Example Title"}, preloads: [:comments])
+%Post{title: "Example Title", comments: [%Comment{}]}
 ```
 
 #### Posts.get_by!
 
 Fetches a single `%Post{}` from the data store where the attributes match the
-given values. Raises an `Ecto.NoResultsError` if the record does not exist
+given values. Raises an `Ecto.NoResultsError` if the record does not exist.
+
+Accepts an optional second argument keyword list with `preloads`.
 
 ```elixir
 iex> Posts.get_by!(%{title: "Example Title"})
@@ -446,6 +542,9 @@ iex> Posts.get_by!(%{title: "Example Title"})
 
 iex> Posts.get_by!(%{title: "Doesn't Exist"})
 ** (Ecto.NoResultsError)
+
+iex> Posts.get_by!(%{title: "Example Title"}, preloads: [:comments])
+%Post{title: "Example Title", comments: [%Comment{}]}
 ```
 
 #### Posts.update
@@ -457,7 +556,7 @@ iex> Posts.update(%Post{id: 1}, %{title: "Updated Title"})
 {:ok, %Post{id: 1, title: "Updated Title"}}
 
 iex> Posts.update(%Post{id: 1}, %{invalid: "invalid"})
-{:error, %Ecto.Changeset}
+{:error, %Ecto.Changeset{}}
 ```
 
 #### Posts.update!
@@ -474,26 +573,174 @@ iex> Posts.update!(%Post{id: 1}, %{invalid: "invalid"})
 
 ## Generators
 
-Generators are basically `EctoCooler` replacements for Phoenix Context and Schema generators.
+Generators are `EctoCooler` replacements for Phoenix Context and Schema generators. They create files that follow EctoCooler conventions out of the box.
+
+All generators require the `app_name` and `app_slug` configuration options to be set. See [Configuration](#configuration) for details.
 
 ### mix ectc.gen.repo
 
-This generator will generate a Repo module, a Schema module, and a Migration file with the given options. The options from left to right are: [repo name] [schema name] [table name] [attributes]
+Generates a repo context module, a schema module, and a migration file.
 
 ```bash
+mix ectc.gen.repo [repo_name] [schema_name] [table_name] [attributes...]
+```
 
+**Example:**
+
+```bash
 mix ectc.gen.repo Posts Post posts title:string author:string
-
 ```
 
-This will create the following files:
+This creates three files:
+
+**`lib/my_app/repo/posts.ex`** — Repo context module:
+```elixir
+defmodule MyApp.Repo.Posts do
+  use EctoCooler
+
+  import Ecto.Query, warn: false
+
+  alias MyApp.Repo
+  alias MyApp.Schema.Post
+
+  using_repo(Repo) do
+    resource(Post)
+  end
+end
+```
+
+**`lib/my_app/schema/post.ex`** — Ecto schema:
+```elixir
+defmodule MyApp.Schema.Post do
+  use Ecto.Schema
+  import Ecto.Changeset
+
+  schema "posts" do
+    field :title, :string
+    field :author, :string
+
+    timestamps()
+  end
+
+  @doc false
+  def changeset(post, attrs) do
+    post
+    |> cast(attrs, [:title, :author])
+    |> validate_required([:title, :author])
+  end
+end
+```
+
+**`priv/repo/migrations/TIMESTAMP_create_posts.exs`** — Ecto migration:
+```elixir
+defmodule MyApp.Repo.Migrations.CreatePosts do
+  use Ecto.Migration
+
+  def change do
+    create table(:posts) do
+      add :title, :text, null: false
+      add :author, :text, null: false
+
+      timestamps()
+    end
+  end
+end
+```
+
+### mix ectc.gen.schema
+
+Generates a schema module and an accompanying migration file.
 
 ```bash
-/lib/my_app/repo/posts.ex
-/lib/my_app/schema/post.ex
-lib/priv/repo/migrations/00000000000000000_create_posts.exs
+mix ectc.gen.schema [schema_name] [table_name] [attributes...]
+```
+
+**Example:**
+
+```bash
+mix ectc.gen.schema Post posts title:string author:string
+```
+
+This creates two files:
+
+- `lib/my_app/schema/post.ex` — Ecto schema
+- `priv/repo/migrations/TIMESTAMP_create_posts.exs` — Ecto migration
+
+### mix ectc.gen.migration
+
+Generates only a migration file.
+
+```bash
+mix ectc.gen.migration [schema_name] [table_name] [attributes...]
+```
+
+**Example:**
+
+```bash
+mix ectc.gen.migration Post posts title:string author:string
+```
+
+This creates:
+
+- `priv/repo/migrations/TIMESTAMP_create_posts.exs` — Ecto migration
+
+### mix ecto_cooler.resources
+
+Lists all generated resource functions for a given context module. Useful for verifying which functions EctoCooler has generated.
+
+```bash
+mix ecto_cooler.resources [module_name]
+```
+
+**Example:**
+
+```bash
+mix ecto_cooler.resources MyApp.Repo.Posts
+```
+
+**Output:**
 
 ```
+Within the context MyApp.Repo.Posts, the following resource functions have been generated:
+
+Post using the repo Repo:
+- MyApp.Repo.Posts.all/1
+- MyApp.Repo.Posts.change/2
+- MyApp.Repo.Posts.changeset/0
+- MyApp.Repo.Posts.create/1
+- MyApp.Repo.Posts.create!/1
+- MyApp.Repo.Posts.delete/1
+- MyApp.Repo.Posts.delete!/1
+- MyApp.Repo.Posts.get/2
+- MyApp.Repo.Posts.get!/2
+- MyApp.Repo.Posts.get_by/2
+- MyApp.Repo.Posts.get_by!/2
+- MyApp.Repo.Posts.update/2
+- MyApp.Repo.Posts.update!/2
+```
+
+### Attribute format
+
+All generators accept attributes in the format `field:type`. Available formats:
+
+| Format | Example | Description |
+|---|---|---|
+| `field:type` | `title:string` | Standard field with `null: false` in migration, included in `validate_required` |
+| `field:type:null` | `bio:string:null` | Nullable field — omits `null: false` in migration, excluded from `validate_required` |
+| `field:references:table` | `user_id:references:users` | Foreign key reference |
+
+**Supported type aliases:**
+
+| Alias | Ecto Type |
+|---|---|
+| `string` | `:text` |
+| `int` | `:integer` |
+| `bool` | `:boolean` |
+| `json` | `:map` |
+
+All other types (e.g., `integer`, `float`, `date`, `utc_datetime`) are passed through as-is.
+
+**Note:** The `string` type maps to Postgres `:text` (not `:string`/varchar as in Phoenix generators). This means all string fields use unbounded text columns by default.
 
 ## Caveats
 
@@ -517,10 +764,6 @@ If you discover any bugs, feel free to create an issue on [GitHub](https://githu
 - Push to the branch (`git push origin feature/fooBar`)
 - Create a new Pull Request
 
-### Nice to have features/improvements (:point_up::wink:)
-
-- Ability to override pluralization
-
 ## Release Workflow
 
 This project uses a conventional commit-based release workflow that automatically creates releases when pull requests are merged to the main branch.
@@ -542,7 +785,7 @@ When a pull request with a conventional commit branch name is merged to main:
 
 1. **Version Detection**: The workflow analyzes the branch name to determine the version bump type
 2. **Version Update**: Updates the version in `mix.exs` according to semantic versioning
-3. **Changelog Update**: 
+3. **Changelog Update**:
    - Creates a new version entry in `CHANGELOG.md`
    - Adds the PR title to the appropriate section (Added/Changed/Fixed)
 4. **Release Tag**: Creates and pushes a git tag with the new version
@@ -567,7 +810,3 @@ For manual releases or when the automated workflow isn't suitable, you can:
 ## License
 
 [Apache 2.0](https://raw.githubusercontent.com/daytonn/ecto_cooler/main/LICENSE.txt)
-
-```
-
-```

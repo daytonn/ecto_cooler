@@ -12,7 +12,7 @@ defmodule EctoCooler.OptionParserTest do
                },
                change: %{
                  name: :change_suffix,
-                 description: "change_suffix/1"
+                 description: "change_suffix/2"
                },
                changeset: %{
                  name: :suffix_changeset,
@@ -86,7 +86,7 @@ defmodule EctoCooler.OptionParserTest do
                },
                change: %{
                  name: :change_suffix,
-                 description: "change_suffix/1"
+                 description: "change_suffix/2"
                },
                changeset: %{
                  name: :suffix_changeset,
@@ -172,7 +172,7 @@ defmodule EctoCooler.OptionParserTest do
                },
                change: %{
                  name: :change_suffix,
-                 description: "change_suffix/1"
+                 description: "change_suffix/2"
                },
                changeset: %{
                  name: :suffix_changeset,
@@ -197,6 +197,56 @@ defmodule EctoCooler.OptionParserTest do
              }
     end
 
+    test "when given :delete" do
+      assert OptionParser.parse("suffix", :delete) == %{
+               delete: %{
+                 name: :delete_suffix,
+                 description: "delete_suffix/1"
+               },
+               delete!: %{
+                 name: :delete_suffix!,
+                 description: "delete_suffix!/1"
+               }
+             }
+    end
+
+    test "when given :write" do
+      assert OptionParser.parse("suffix", :write) == %{
+               change: %{
+                 name: :change_suffix,
+                 description: "change_suffix/2"
+               },
+               changeset: %{
+                 name: :suffix_changeset,
+                 description: "suffix_changeset/0"
+               },
+               create: %{
+                 name: :create_suffix,
+                 description: "create_suffix/1"
+               },
+               create!: %{
+                 name: :create_suffix!,
+                 description: "create_suffix!/1"
+               },
+               update: %{
+                 name: :update_suffix,
+                 description: "update_suffix/2"
+               },
+               update!: %{
+                 name: :update_suffix!,
+                 description: "update_suffix!/2"
+               },
+               delete: %{
+                 name: :delete_suffix,
+                 description: "delete_suffix/1"
+               },
+               delete!: %{
+                 name: :delete_suffix!,
+                 description: "delete_suffix!/1"
+               }
+             }
+    end
+
     test "when given the except atom and a list of bang functions" do
       assert OptionParser.parse("suffix", except: [:create!, :delete!, :get!, :update!]) == %{
                all: %{
@@ -205,7 +255,7 @@ defmodule EctoCooler.OptionParserTest do
                },
                change: %{
                  name: :change_suffix,
-                 description: "change_suffix/1"
+                 description: "change_suffix/2"
                },
                changeset: %{
                  name: :suffix_changeset,
@@ -262,7 +312,7 @@ defmodule EctoCooler.OptionParserTest do
     test "when given suffix option and other options" do
       assert OptionParser.parse("", suffix: false, except: [:create!, :create]) == %{
                all: %{name: :all, description: "all/1"},
-               change: %{name: :change, description: "change/1"},
+               change: %{name: :change, description: "change/2"},
                changeset: %{name: :changeset, description: "changeset/0"},
                delete: %{name: :delete, description: "delete/1"},
                get: %{name: :get, description: "get/2"},

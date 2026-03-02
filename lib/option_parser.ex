@@ -5,7 +5,7 @@ defmodule EctoCooler.OptionParser do
 
   @functions [
     {"all", 1},
-    {"change", 1},
+    {"change", 2},
     {"changeset", 0},
     {"create!", 1},
     {"create", 1},
@@ -22,6 +22,13 @@ defmodule EctoCooler.OptionParser do
   @spec parse(String.t(), list() | atom()) :: map()
 
   def parse(suffix, :read), do: parse(suffix, only: [:all, :get, :get!, :get_by, :get_by!])
+  def parse(suffix, :delete), do: parse(suffix, only: [:delete, :delete!])
+
+  def parse(suffix, :write) do
+    parse(suffix,
+      only: [:change, :changeset, :create, :create!, :update, :update!, :delete, :delete!]
+    )
+  end
 
   def parse(suffix, :read_write) do
     parse(suffix,

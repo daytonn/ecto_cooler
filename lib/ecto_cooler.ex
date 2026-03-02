@@ -2,7 +2,7 @@ defmodule EctoCooler do
   @moduledoc """
   This module provides a DSL to easily generate the basic functions for a schema.
   This allows the context to focus on interesting, atypical implementations rather
-  than the redundent, drifting CRUD functions.
+  than the redundant, drifting CRUD functions.
   """
 
   alias __MODULE__
@@ -48,37 +48,37 @@ defmodule EctoCooler do
 
   ## Examples
       ### Generate a complete set of resource functions, suffix defaults to false
-      using(Repo) do
+      using_repo(Repo) do
         resource(Schema)
       end
 
       ### Generate a complete set of resource functions, with a _<resource_name> suffix (ie. Posts.get_post_by, Posts.get_post, etc.)
-      using(Repo) do
+      using_repo(Repo) do
         resource(Schema, suffix: true)
       end
 
       ### Generate only a given list of functions
-      using(Repo) do
+      using_repo(Repo) do
         resource(Schema, only: [:get])
       end
 
       ### Generate every function except those in the given list
-      using(Repo) do
+      using_repo(Repo) do
         resource(Schema, except: [:delete])
       end
 
       ### Generate all read operation functions
-      using(Repo) do
+      using_repo(Repo) do
         resource(Schema, :read)
       end
 
-      ### Generate all write (includes read) operation functions
-      using(Repo) do
+      ### Generate all data mutation functions (excludes read-only functions)
+      using_repo(Repo) do
         resource(Schema, :write)
       end
 
       ### Generate only delete functions
-      using(Repo) do
+      using_repo(Repo) do
         resource(Schema, :delete)
       end
   """
