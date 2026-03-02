@@ -6,7 +6,7 @@ defmodule EctoCooler.Templates.Schema do
   EEx.function_from_file(
     :def,
     :generate,
-    Path.expand("schema.eex", "lib/templates/schema"),
+    Path.join(__DIR__, "schema.eex"),
     [:assigns]
   )
 

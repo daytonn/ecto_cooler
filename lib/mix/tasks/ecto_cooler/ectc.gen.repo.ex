@@ -1,10 +1,22 @@
 defmodule Mix.Tasks.Ectc.Gen.Repo do
-  @shortdoc "Generate a schema using EctoCooler"
+  @shortdoc "Generate a repo, schema, and migration using EctoCooler"
 
   @moduledoc """
-  Generate a schema using EctoCooler
+  Generate a repo, schema, and migration using EctoCooler.
 
-    mix ectc.gen.repo Posts Post posts title:string
+  ## Usage
+
+      mix ectc.gen.repo [repo_name] [schema_name] [table_name] [attributes...]
+
+  ## Example
+
+      mix ectc.gen.repo Posts Post posts title:string author:string
+
+  This creates three files:
+
+    - `lib/my_app/repo/posts.ex` — Repo context module with EctoCooler
+    - `lib/my_app/schema/post.ex` — Ecto schema
+    - `priv/repo/migrations/TIMESTAMP_create_posts.exs` — Ecto migration
   """
   @requirements ["app.config"]
 

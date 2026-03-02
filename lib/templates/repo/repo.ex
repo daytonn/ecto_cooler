@@ -6,7 +6,7 @@ defmodule EctoCooler.Templates.Repo do
   EEx.function_from_file(
     :def,
     :generate,
-    Path.expand("repo.eex", "lib/templates/repo"),
+    Path.join(__DIR__, "repo.eex"),
     [:assigns]
   )
 

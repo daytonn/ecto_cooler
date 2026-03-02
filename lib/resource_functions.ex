@@ -53,20 +53,22 @@ defmodule EctoCooler.ResourceFunctions do
 
   def get(repo, schema, id, options \\ []) do
     preloads = Keyword.get(options, :preloads, [])
+    repo_opts = Keyword.delete(options, :preloads)
 
     schema
     |> preload(^preloads)
-    |> repo.get(id, [])
+    |> repo.get(id, repo_opts)
   end
 
   @spec get!(Ecto.Repo.t(), module, term(), Keyword.t()) :: Ecto.Schema.t()
 
   def get!(repo, schema, id, options \\ []) do
     preloads = Keyword.get(options, :preloads, [])
+    repo_opts = Keyword.delete(options, :preloads)
 
     schema
     |> preload(^preloads)
-    |> repo.get!(id, [])
+    |> repo.get!(id, repo_opts)
   end
 
   @spec get_by(Ecto.Repo.t(), Ecto.Queryable.t(), Keyword.t() | map(), Keyword.t()) ::
@@ -100,12 +102,11 @@ defmodule EctoCooler.ResourceFunctions do
     order_opts = Keyword.get(options, :order_by, [])
     conditions = Keyword.get(options, :where, [])
 
-    query = schema
-    query = if preloads == [], do: query, else: preload(query, ^preloads)
-    query = if order_opts == [], do: query, else: order_by(query, ^order_opts)
-    query = if conditions == [], do: query, else: where(query, ^conditions)
-
-    repo.all(query, [])
+    schema
+    |> maybe_preload(preloads)
+    |> maybe_order_by(order_opts)
+    |> maybe_where(conditions)
+    |> repo.all([])
   end
 
   @spec update(Ecto.Repo.t(), module, Ecto.Schema.t(), map() | Keyword.t()) ::
@@ -128,6 +129,15 @@ defmodule EctoCooler.ResourceFunctions do
   # ---------------------------------------------------------------------------
   # Private helpers
   # ---------------------------------------------------------------------------
+
+  defp maybe_preload(query, []), do: query
+  defp maybe_preload(query, preloads), do: preload(query, ^preloads)
+
+  defp maybe_order_by(query, []), do: query
+  defp maybe_order_by(query, opts), do: order_by(query, ^opts)
+
+  defp maybe_where(query, []), do: query
+  defp maybe_where(query, conditions), do: where(query, ^conditions)
 
   defp normalize_attributes(attrs) when is_list(attrs), do: Enum.into(attrs, %{})
   defp normalize_attributes(attrs), do: attrs

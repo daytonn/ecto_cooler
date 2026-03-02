@@ -1,4 +1,4 @@
-defmodule EctoCooler.ReadWriteContext.People do
+defmodule EctoCooler.WriteTestContext.People do
   @moduledoc false
 
   alias EctoCooler.TestRepo
@@ -7,15 +7,15 @@ defmodule EctoCooler.ReadWriteContext.People do
   use EctoCooler
 
   using_repo TestRepo do
-    resource(Person, :read_write)
+    resource(Person, :write)
   end
 end
 
-defmodule EctoCooler.ReadWrite do
+defmodule EctoCooler.WriteTest do
   use EctoCooler.RepoCase
 
   alias EctoCooler.TestSchema.Person
-  alias EctoCooler.ReadWriteContext.People
+  alias EctoCooler.WriteTestContext.People
 
   @person_attributes %{
     first_name: "Test",
@@ -30,14 +30,8 @@ defmodule EctoCooler.ReadWrite do
   }
 
   describe "all" do
-    test "it returns all the records" do
-      person = struct(Person, @person_attributes)
-
-      Repo.insert(person)
-      [first_person] = results = People.all()
-
-      assert length(results) == 1
-      assert person.first_name == first_person.first_name
+    test "it doesn't create an all function" do
+      refute Keyword.has_key?(People.__info__(:functions), :all)
     end
   end
 
@@ -89,72 +83,82 @@ defmodule EctoCooler.ReadWrite do
   end
 
   describe "delete" do
-    test "it doesn't create a delete method" do
-      refute Keyword.has_key?(People.__info__(:functions), :delete)
-    end
-  end
-
-  describe "delete!" do
-    test "doesn't create a delete! method" do
-      refute Keyword.has_key?(People.__info__(:functions), :delete!)
-    end
-  end
-
-  describe "get" do
-    test "with an existing record, it returns the schema" do
+    test "with an existing record, it deletes a given record" do
       {:ok, person} =
-        Person
-        |> struct(@person_attributes)
+        %Person{}
+        |> Person.changeset(@person_attributes)
         |> Repo.insert()
 
-      assert person == People.get(person.id)
-    end
+      assert Repo.all(Person) == [person]
 
-    test "with a non-existent record, it returns nil" do
-      assert nil == People.get(999)
-    end
-  end
+      People.delete(person)
 
-  describe "get!" do
-    test "with an existing record, it returns the schema" do
-      {:ok, person} =
-        Person
-        |> struct(@person_attributes)
-        |> Repo.insert()
-
-      assert person == People.get!(person.id)
+      assert Repo.all(Person) == []
     end
 
     test "with a non-existent record, it raises an error" do
-      assert_raise Ecto.NoResultsError, fn ->
-        People.get!(999)
+      {:ok, person} =
+        %Person{}
+        |> Person.changeset(@person_attributes)
+        |> Repo.insert()
+
+      Repo.delete(person)
+
+      assert_raise Ecto.StaleEntryError, fn ->
+        People.delete(person)
       end
     end
   end
 
-  describe "get_by" do
-    test "with an existing record, it returns a single schema matching the criteria" do
+  describe "delete!" do
+    test "with an existing record it deletes the given record" do
       {:ok, person} =
-        Person
-        |> struct(@person_attributes)
+        %Person{}
+        |> Person.changeset(@person_attributes)
         |> Repo.insert()
 
-      assert People.get_by(age: @person_attributes.age) == person
+      assert Repo.all(Person) == [person]
+
+      People.delete!(person)
+
+      assert Repo.all(Person) == []
     end
 
-    test "with a non-existent record, it returns nil" do
-      assert People.get_by(age: @person_attributes.age) == nil
+    test "with a non-existent record, it raises an error" do
+      {:ok, person} =
+        %Person{}
+        |> Person.changeset(@person_attributes)
+        |> Repo.insert()
+
+      Repo.delete(person)
+
+      assert_raise Ecto.StaleEntryError, fn ->
+        People.delete!(person)
+      end
+    end
+  end
+
+  describe "get" do
+    test "it doesn't create a get function" do
+      refute Keyword.has_key?(People.__info__(:functions), :get)
+    end
+  end
+
+  describe "get!" do
+    test "it doesn't create a get! function" do
+      refute Keyword.has_key?(People.__info__(:functions), :get!)
+    end
+  end
+
+  describe "get_by" do
+    test "it doesn't create a get_by function" do
+      refute Keyword.has_key?(People.__info__(:functions), :get_by)
     end
   end
 
   describe "get_by!" do
-    test "with an existing record, it returns a single schema, matching the criteria" do
-      {:ok, person} =
-        Person
-        |> struct(@person_attributes)
-        |> Repo.insert()
-
-      assert People.get_by!(age: @person_attributes.age) == person
+    test "it doesn't create a get_by! function" do
+      refute Keyword.has_key?(People.__info__(:functions), :get_by!)
     end
   end
 
@@ -201,7 +205,7 @@ defmodule EctoCooler.ReadWrite do
       assert person.age != updated_person.age
     end
 
-    test "with invalid attributes, it returns an error changeset tuple" do
+    test "with invalid attributes, it raises an error" do
       {:ok, person} =
         Person
         |> struct(@person_attributes)

@@ -54,7 +54,7 @@ defmodule EctoCooler.ExceptFilterTest do
   end
 
   describe "create" do
-    test "with valid attributbes, it creates a new record" do
+    test "with valid attributes, it creates a new record" do
       {:ok, person} = People.create(@person_attributes)
 
       assert Repo.all(Person) == [person]
@@ -66,7 +66,7 @@ defmodule EctoCooler.ExceptFilterTest do
   end
 
   describe "create!" do
-    test "whith valid attributes, it creates a new record" do
+    test "with valid attributes, it creates a new record" do
       person = People.create!(@person_attributes)
 
       assert Repo.all(Person) == [person]
