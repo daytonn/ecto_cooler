@@ -280,7 +280,7 @@ defmodule EctoCooler.OptionParserTest do
     defmodule TestSchema do
     end
 
-    test "with no options, it returns an empty sstring" do
+    test "with no options, it returns an empty string" do
       assert OptionParser.create_suffix(TestSchema, []) == ""
     end
 

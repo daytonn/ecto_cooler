@@ -6,7 +6,7 @@ defmodule EctoCooler.Templates.Migration do
   EEx.function_from_file(
     :def,
     :generate,
-    Path.expand("migration.eex", "lib/templates/migration"),
+    Path.join(__DIR__, "migration.eex"),
     [:assigns]
   )
 
@@ -62,8 +62,7 @@ defmodule EctoCooler.Templates.Migration do
   def options(binary_id: false), do: nil
   def options(binary_id: true), do: ", primary_key: false"
 
-  def fields(nil, false), do: fields([], false)
-  def fields(nil, true), do: fields([], true)
+  def fields(nil, binary_id), do: fields([], binary_id)
   def fields([], true), do: [create_field(["id", "binary_id"])]
   def fields([], false), do: []
 

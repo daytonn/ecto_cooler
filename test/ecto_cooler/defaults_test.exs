@@ -84,7 +84,7 @@ defmodule EctoCooler.DefaultsTest do
       assert changes == @person_attributes
     end
 
-    test "it accpets keyword lists" do
+    test "it accepts keyword lists" do
       person = %Person{
         first_name: "Initial",
         last_name: "Value",
@@ -107,7 +107,7 @@ defmodule EctoCooler.DefaultsTest do
   end
 
   describe "create" do
-    test "with valid attributbes, it creates a new record" do
+    test "with valid attributes, it creates a new record" do
       {:ok, person} = People.create(@person_attributes)
 
       assert Repo.all(Person) == [person]

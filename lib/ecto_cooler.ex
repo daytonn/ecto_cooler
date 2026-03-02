@@ -258,6 +258,7 @@ defmodule EctoCooler do
             #{delete.name}(%#{schema_name}{id: 456})
             ** (Ecto.StaleEntryError)
         """
+        @spec unquote(delete.name)(Ecto.Schema.t()) :: Ecto.Schema.t()
         def unquote(delete.name)(struct) do
           ResourceFunctions.delete!(@repo, struct)
         end
@@ -303,6 +304,7 @@ defmodule EctoCooler do
               relation: %Relation{}
             }
         """
+        @spec unquote(get.name)(String.t() | integer(), keyword()) :: Ecto.Schema.t()
         def unquote(get.name)(id, options \\ []) do
           ResourceFunctions.get!(@repo, unquote(schema), id, options)
         end
@@ -321,6 +323,7 @@ defmodule EctoCooler do
             #{get_by.name}(name: "Missing")
             nil
         """
+        @spec unquote(get_by.name)(Keyword.t() | map(), keyword()) :: Ecto.Schema.t() | nil
         def unquote(get_by.name)(attributes, options \\ []) do
           ResourceFunctions.get_by(@repo, unquote(schema), attributes, options)
         end
@@ -340,6 +343,7 @@ defmodule EctoCooler do
             #{get_by.name}(name: "Missing")
             ** (Ecto.NoResultsError)
         """
+        @spec unquote(get_by.name)(Keyword.t() | map(), keyword()) :: Ecto.Schema.t()
         def unquote(get_by.name)(attributes, options \\ []) do
           ResourceFunctions.get_by!(@repo, unquote(schema), attributes, options)
         end
